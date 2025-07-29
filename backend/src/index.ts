@@ -1,9 +1,10 @@
 import Fastify from "fastify";
 import dotenv from "dotenv";
+import { createSchedule } from "./routes/schedule";
 
 dotenv.config();
 
-const fastify = Fastify({ logger: true });
+export const fastify = Fastify({ logger: true });
 
 // declare
 fastify.get("/", async (req, rep) => {

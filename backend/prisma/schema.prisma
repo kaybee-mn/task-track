@@ -11,6 +11,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // Optional but good for migrations
 }
 
 model User {
@@ -80,10 +81,11 @@ model Mood {
 model Log {
   id        String   @id @default(cuid())
   type      LogType
-  itemId    String
+  itemId    String?
+  moodId    String?
   timestamp Int
   task      Task?    @relation(fields: [itemId], references: [id])
-  mood      Mood?    @relation(fields: [itemId], references: [id])
+  mood      Mood?    @relation(fields: [moodId], references: [id])
   user      User?    @relation(fields: [userId], references: [id])
   userId    String?
 }
