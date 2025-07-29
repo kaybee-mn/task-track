@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  username   String
+  timezone   String
+  tasks      Task[]
+  moods      Mood[]
+  preferences UserPreferences?
+  logs       Log[]
+}
+
+model Task {
+  id          String           @id @default(cuid())
+  title       String
+  description String
+  recurrence  Boolean
+  user        User             @relation(fields: [userId], references: [id])
+  userId      String
+  recurrenceInfo RecurrenceInfo?
+  sortingInfo SortingInfo?
+  logs        Log[]
+}
+
+model RecurrenceInfo {
+  id              String   @id @default(cuid())
+  task            Task     @relation(fields: [taskId], references: [id])
+  taskId          String   @unique
+  startDate       Int
+  type            RecurrenceType
+  freq            Int
+  fromLastCompletion Boolean
+  byDay           String[]
+  endOnDate       Boolean
+  end             Int?
+  bySetPos        Int?
+}
+
+enum RecurrenceType {
+  DAILY
+  MONTHLY
+  WEEKLY
+  HOURLY
+  MINUTELY
+  YEARLY
+  BYMONTHDAY
+}
+
+model SortingInfo {
+  id         String   @id @default(cuid())
+  task       Task     @relation(fields: [taskId], references: [id])
+  taskId     String   @unique
+  priority   Int
+  difficulty Int
+  location   String
+}
+
+model Mood {
+  id      String   @id @default(cuid())
+  mood    Int
+  notes   String
+  user    User     @relation(fields: [userId], references: [id])
+  userId  String
+  logs    Log[]
+}
+
+model Log {
+  id        String   @id @default(cuid())
+  type      LogType
+  itemId    String
+  timestamp Int
+  task      Task?    @relation(fields: [itemId], references: [id])
+  mood      Mood?    @relation(fields: [itemId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+enum LogType {
+  task
+  mood
+  app_update
+}
+
+model UserPreferences {
+  id       String   @id @default(cuid())
+  range0   Int
+  range1   Int
+  textSize Int
+  user     User     @relation(fields: [userId], references: [id])
+  userId   String   @unique
+}
