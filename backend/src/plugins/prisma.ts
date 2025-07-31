@@ -8,7 +8,7 @@ declare module "fastify" {
 }
 
 export default fp(async (fastify) => {
-  const prisma = PrismaClient();
+  const prisma = new PrismaClient();
 //  connect to database 
   await prisma.$connect();
   fastify.decorate("prisma", prisma);
