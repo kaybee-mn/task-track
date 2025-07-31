@@ -1,4 +1,7 @@
 import { prisma } from "../lib/prisma";
-import { Task } from "@prisma/client";
+// import { Task } from "@prisma/client";
 
-export function getUserTasks(userId: string) {}
+export async function getUserTasks(userId: string) {
+    const tasks = await prisma.task.findMany({user_id:userId});
+    return tasks;
+}
