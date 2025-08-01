@@ -5,6 +5,7 @@ import { createSchedule } from "./routes/schedule";
 import prismaPlugin from './plugins/prisma';
 import authPlugin from './plugins/auth';
 import tasksRoutes from './routes/tasks';
+import authRoutes from "./routes/auth";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ export const fastify = Fastify({ logger: true });
 await fastify.register(prismaPlugin);
 await fastify.register(authPlugin);
 await fastify.register(tasksRoutes);
+await fastify.register(authRoutes);
 
 // run server on port 3000
 const start = async () => {

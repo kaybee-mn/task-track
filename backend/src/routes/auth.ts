@@ -22,9 +22,8 @@ const authRoutes = async (fastify: FastifyInstance) => {
     await fastify.prisma.user.create({
       data: {
         email,
-        id: data.user?.id || "",
-        timezone:tz,
-        username:""
+        supabaseId: data.user?.id || "",
+        timezone:tz
       },
     });
 
