@@ -1,31 +1,60 @@
 import type { FastifyInstance } from "fastify";
-import  supabase from "../plugins/supabase"; // your configured supabase client
+import supabase from "../plugins/supabase"; // your configured supabase client
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 const authRoutes = async (fastify: FastifyInstance) => {
-  // Signup
-  fastify.post("/signup", async (request, reply) => {
-    const { email, password,timezone } = request.body as {
+  fastify.post("/confirmation", async (request, response) => {
+    const { email } = request.body as {
       email: string;
-      password: string;
-      timezone:string;
     };
-
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) {
-      return reply.code(400).send({ error: error.message });
-    }
-
-    // Create user in your DB (optional)
-    await fastify.prisma.user.create({
-      data: {
-        email,
-        supabaseId: data.user?.id || "",
-        timezone:timezone
+    await supabase.auth.resend({
+      type: "signup",
+      email: email,
+      options: {
+        emailRedirectTo: `exp://${process.env.LOCAL_IP}:8081/--/confirm`, // or whatever your deep link is
       },
     });
+  });
+  // Signup
+  fastify.post("/signup", async (request, reply) => {
+    const isDev = process.env.NODE_ENV !== "production";
+    const redirectUrl = isDev
+      ? `exp://${process.env.LOCAL_IP}:8081/--/confirm`
+      : "myapp://confirm";
+    const { email, password, timezone } = request.body as {
+      email: string;
+      password: string;
+      timezone: string;
+    };
+
+    if (!email || !password) {
+      return reply.status(400).send({ error: "Email and password required" });
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+      },
+    });
+    if (error) {
+      return reply
+        .code(400)
+        .send({ error: "Supabase signup error: " + error.message });
+    }
+    // Create user in your DB (optional)
+    await fastify.prisma.user
+      .create({
+        data: {
+          email,
+          supabaseId: data.user?.id || "",
+          timezone: timezone,
+        },
+      })
+      .then((err) => reply.code(400).send({ error: "error", err }));
 
     const token = jwt.sign({ userId: data.user?.id }, JWT_SECRET, {
       expiresIn: "7d",
@@ -46,7 +75,7 @@ const authRoutes = async (fastify: FastifyInstance) => {
       password,
     });
     if (error || !data.session?.user.id) {
-      return reply.code(401).send({ error: "Invalid credentials" });
+      return reply.code(401).send({ error });
     }
 
     const token = jwt.sign({ userId: data.session.user.id }, JWT_SECRET, {
@@ -57,4 +86,4 @@ const authRoutes = async (fastify: FastifyInstance) => {
   });
 };
 
-export default authRoutes
+export default authRoutes;
