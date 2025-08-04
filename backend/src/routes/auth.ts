@@ -1,11 +1,12 @@
 import type { FastifyInstance } from "fastify";
-import supabase from "../plugins/supabase"; // your configured supabase client
+import {supabase} from "../plugins/supabase"; // your configured supabase client
 import jwt from "jsonwebtoken";
+import { access } from "fs";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 const authRoutes = async (fastify: FastifyInstance) => {
-  fastify.post("/confirmation", async (request, response) => {
+  fastify.post("/confirmation", async (request, reply) => {
     const { email } = request.body as {
       email: string;
     };
@@ -78,11 +79,9 @@ const authRoutes = async (fastify: FastifyInstance) => {
       return reply.code(401).send({ error });
     }
 
-    const token = jwt.sign({ userId: data.session.user.id }, JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const session = data.session
 
-    return reply.send({ token });
+    return reply.send( {session} );
   });
 };
 

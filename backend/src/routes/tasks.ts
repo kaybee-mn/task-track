@@ -13,9 +13,10 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.addHook("preHandler", fastify.authenticate);
 
   fastify.get("/tasks", async (request, reply) => {
-    const userId = request.user.id;
-    const data = fastify.prisma.task.findMany({ where: { userId: userId } });
-    return await data;
+    const userId = request.user.id
+    const data = await fastify.prisma.task.findMany({ where: { userId} });
+    console.log(data);
+    return reply.send(  data);
   });
 };
 

@@ -1,6 +1,9 @@
 import fp from "fastify-plugin";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { jwtVerify, createRemoteJWKSet } from "jose";
+import { createClient } from "@supabase/supabase-js";
+import { createSupabaseClientWithToken } from "./supabase";
 
 dotenv.config();
 
@@ -21,22 +24,18 @@ export default fp(async (fastify) => {
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      reply.status(401).json({ error: "Missing or invalid header" });
+      reply.status(401).send({ error: "Missing or invalid header" });
       return;
     }
     const token = authHeader?.split(" ")[1];
     try {
-      const secret = process.env.JWT_SECRET;
-      if (!secret) {
-        throw new Error("JWT secret not defined");
-      }
-      const payload = jwt.verify(token, secret) as JwtUserPayload;
-      // make sure user is initialized
-      request.user = request.user || {};
+      const supabase = createSupabaseClientWithToken(token);
       // pass the user id
-      request.user.id = payload.user_metadata.sub;
+      const { data: { user }, error } = await supabase.auth.getUser();
+      request.user = user;
     } catch (err) {
-      reply.status(403).json({ error: "Invalid token", err });
+      console.error("JWT verification failed:", err);
+      return reply.status(403).send({ error: "Invalid token", err });
     }
   });
 });
