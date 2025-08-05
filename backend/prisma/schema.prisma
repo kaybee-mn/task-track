@@ -35,6 +35,7 @@ model Task {
   userId      String
   recurrenceInfo RecurrenceInfo?
   sortingInfo SortingInfo?
+  startDate       DateTime
   logs        Log[]
 }
 
@@ -42,12 +43,12 @@ model RecurrenceInfo {
   id              String   @id @default(cuid())
   task            Task     @relation(fields: [taskId], references: [id])
   taskId          String   @unique
-  startDate       DateTime
   type            RecurrenceType
   freq            Int
   fromLastCompletion Boolean
+  startDate       DateTime
   byDay           String[]
-  endOnDate       Boolean
+  endType       Int
   end             Int?
   bySetPos        Int?
 }
