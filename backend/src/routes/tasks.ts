@@ -15,7 +15,6 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/tasks", async (request, reply) => {
     const userId = request.user.id
     const data = await fastify.prisma.task.findMany({ where: { userId} });
-    console.log(data);
     return reply.send(  data);
   });
 };

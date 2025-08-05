@@ -32,7 +32,11 @@ export default fp(async (fastify) => {
       const supabase = createSupabaseClientWithToken(token);
       // pass the user id
       const { data: { user }, error } = await supabase.auth.getUser();
-      request.user = user;
+      if(error){
+        throw new Error(error.message);
+      }
+      const prismaUser = await fastify.prisma.user.findFirst({where:{supabaseId:user?.id}})
+      request.user = {...user,...prismaUser}
     } catch (err) {
       console.error("JWT verification failed:", err);
       return reply.status(403).send({ error: "Invalid token", err });
