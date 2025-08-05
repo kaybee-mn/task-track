@@ -29,6 +29,7 @@ model Task {
   id          String           @id @default(cuid())
   title       String
   description String
+  duration Int
   recurrence  Boolean
   user        User             @relation(fields: [userId], references: [id])
   userId      String
