@@ -80,9 +80,7 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
         startDate: startDate,
         ...(recurrence && {
           recurrenceInfo: {
-            create: {
-              ...recurrenceInfo,
-            },
+            ...recurrenceInfo,
           },
         }),
         sortingInfo: {
@@ -95,7 +93,7 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
     };
-    console.log(d);
+    console.log(JSON.stringify(d),'\n\n\n');
     const task = await fastify.prisma.task.create(d);
     return reply.send(task);
   });
