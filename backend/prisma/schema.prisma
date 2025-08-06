@@ -46,8 +46,8 @@ model RecurrenceInfo {
   type            RecurrenceType
   freq            Int
   fromLastCompletion Boolean
-  startDate       DateTime
-  byDay           String[]
+  lastCompletionDate       DateTime?
+  byDay           String[]?
   endType       Int
   end             Int?
   bySetPos        Int?
