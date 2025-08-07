@@ -35,8 +35,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
 
-    marginTop: StatusBar.currentHeight || 0,
-    width: 300,
+    marginTop: 24,
+    width: '100%',
   },
   list: {
     width: Dimensions.get("window").width * 0.95,

@@ -54,9 +54,8 @@ export default function HomeScreen() {
       <ThemedView
         style={{
           flexDirection: "row",
-          marginTop: 40,
-          marginHorizontal: 24,
           justifyContent: "space-between",
+          width: "100%",
         }}
       >
         <ThemedView style={styles.titleContainer}>
@@ -65,10 +64,11 @@ export default function HomeScreen() {
         </ThemedView>
         <AddTask />
       </ThemedView>
-      <ThemedView style={styles.container}>
+      <ThemedView style={styles.stepContainer}>
         <ThemedButton
           onPress={() => showMode()}
           text={date.toLocaleDateString()}
+          type="subtitle"
         />
         <DailySchedule sortedDailyTasks={tasks} />
       </ThemedView>
@@ -79,24 +79,19 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
-    alignItems: "center",
     gap: 8,
+    alignItems: "center",
   },
   stepContainer: {
     gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+    marginVertical: 24,
   },
   container: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
+    padding: 48,
+    marginTop:24
   },
 });
