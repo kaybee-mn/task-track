@@ -13,8 +13,10 @@ import { ThemedView } from "../ThemedView";
 
 export default function DailySchedule({
   sortedDailyTasks,
+  refreshControl
 }: {
   sortedDailyTasks: any[];
+  refreshControl:any
 }) {
   console.log("sortedDailyTasks", sortedDailyTasks);
   return (
@@ -24,6 +26,7 @@ export default function DailySchedule({
         data={sortedDailyTasks}
         renderItem={({ item }) => <TaskBlock task={item} />}
         keyExtractor={(item) => item.id.toString()}
+        refreshControl={refreshControl}
       />
     </ThemedView>
   );

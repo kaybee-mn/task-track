@@ -18,7 +18,7 @@ const getMostRecentMood = async () => {
     }
   );
   const moodData = await response.json();
-  return moodData.id;
+  return moodData;
 };
 
 const getUserLogs = async ({

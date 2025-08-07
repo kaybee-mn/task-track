@@ -19,13 +19,18 @@ const logRoutes: FastifyPluginAsync = async (fastify) => {
     return reply.send(data);
   });
 
-  fastify.get("/log/recentMood", async (request, reply) => {
+  fastify.get("/logs/recentMood", async (request, reply) => {
     const userId = request.user.id;
 
-    const mood = await fastify.prisma.log.getMostRecentMood()
-    console.log(mood)
-    return reply.send(mood.timestamp);
+    const mood = await fastify.prisma.log.findMany({
+      where: { userId, type: "mood" },
+      orderBy: {
+        timestamp: "desc",
+      },
+      take: 1,
+    });
+    return reply.send(mood[0].timestamp);
   });
-}
+};
 
 export default logRoutes;

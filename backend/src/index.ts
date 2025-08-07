@@ -7,6 +7,7 @@ import authPlugin from './plugins/auth';
 import tasksRoutes from './routes/tasks';
 import authRoutes from "./routes/auth";
 import moodRoutes from "./routes/mood";
+import logRoutes from "./routes/logs";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ await fastify.register(authPlugin);
 await fastify.register(tasksRoutes);
 await fastify.register(authRoutes);
 await fastify.register(moodRoutes);
+await fastify.register(logRoutes);
 
 // run server on port 3000
 const start = async () => {

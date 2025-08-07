@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, RefreshControl, ScrollView, StyleSheet } from "react-native";
 import AddTask from "@/components/taskpage/AddTask";
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -25,6 +25,8 @@ export default function HomeScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const user_token = useRef<string | null>(null);
   const [date, setDate] = useState<Date>(new Date());
+  const [recentMood, setRecentMood] = useState<number>();
+  const [showMoodChecker, setShowMoodChecker] = useState<boolean>(false);
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     const date = selectedDate || new Date();
@@ -41,13 +43,37 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
+    const init = async () => {
+      const rM = await getMostRecentMood();
+      setRecentMood(new Date(rM).getTime());
+    };
+    init();
     onRefresh();
-    getMostRecentMood();
   }, []);
+
+  useEffect(() => {
+    if (recentMood) {
+      const now = Date.now();
+    const elapsed = now - recentMood;
+    const waitTime = 3600000 * 3 - elapsed; // 3 hours in ms
+
+      if (waitTime<=0) {
+        setShowMoodChecker(true);
+      } else {
+        console.log("new recent mood. wait time: ", (waitTime/3600000)," hours");
+        setShowMoodChecker(false);
+        const timeout = setTimeout(() => {
+          setShowMoodChecker(true);
+        }, waitTime);
+        return () => clearTimeout(timeout);
+      }
+    }
+  }, [recentMood]);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    setTasks(await getUserTasks() as Task[]);
+    const tasks = await getUserTasks();
+    setTasks(tasks as Task[]);
     setRefreshing(false);
   };
   if (refreshing) {
@@ -69,14 +95,19 @@ export default function HomeScreen() {
         </ThemedView>
         <AddTask />
       </ThemedView>
-      <MoodChecker />
+      {showMoodChecker && <MoodChecker setRecentMood={setRecentMood} />}
+      <ThemedButton
+        onPress={() => showMode()}
+        text={date.toLocaleDateString()}
+        type="subtitle"
+      />
       <ThemedView style={styles.stepContainer}>
-        <ThemedButton
-          onPress={() => showMode()}
-          text={date.toLocaleDateString()}
-          type="subtitle"
+        <DailySchedule
+          sortedDailyTasks={tasks}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
-        <DailySchedule sortedDailyTasks={tasks} />
       </ThemedView>
     </ThemedView>
   );

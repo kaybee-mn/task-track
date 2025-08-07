@@ -5,12 +5,16 @@ import { useEffect, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { addMoodNote, logMood } from "@/api/moodService";
 
-const MoodChecker = () => {
+type Props = {
+  setRecentMood: React.Dispatch<React.SetStateAction<number | undefined>>;
+};
+
+const MoodChecker = ({ setRecentMood }: Props) => {
   const [note, setNote] = useState<string>("");
   const [showNote, setShowNote] = useState<boolean>(false);
-  const moodId = useRef<string>("");
+  const mood = useRef<{ moodId: string; timestamp: number }>(undefined);
 
-    useEffect(() => {
+  useEffect(() => {
     // If the note is empty, start a 5 second timer to hide it
     if (!note.trim()) {
       const timer = setTimeout(() => {
@@ -18,21 +22,22 @@ const MoodChecker = () => {
       }, 5000);
 
       return () => clearTimeout(timer); // clear if note changes
-    } 
+    }
   }, [note]);
 
   const addNote = () => {
-    setShowNote(false)
-    if(!note.trim()){
-        return
+    setShowNote(false);
+    setRecentMood(mood.current?.timestamp);
+    if (!note.trim()) {
+      return;
     }
-    addMoodNote(note, moodId.current);
+    addMoodNote(note, mood.current?.moodId || "");
   };
-  const handlePress = async (mood: number) => {
+  const handlePress = async (index: number) => {
     setNote("");
     setShowNote(true);
-    const moodData = await logMood(mood);
-    moodId.current = moodData.moodId;
+    const moodData = await logMood(index);
+    mood.current = moodData;
   };
   const Icon = ({ name, onPress }: { name: string; onPress: () => void }) => {
     return (

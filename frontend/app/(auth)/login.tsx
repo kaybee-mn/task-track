@@ -61,13 +61,13 @@ const Login = () => {
       if (!response.ok) {
         throw new Error(data.error.code);
       }
-      await AsyncStorage.setItem("session", JSON.stringify(data.session));
-      console.log("Login successful", data);
+      console.log(data)
+      await AsyncStorage.setItem("session", JSON.stringify(data));
       router.push(ROUTES.HOME);
     } catch (err) {
       console.error(
         "Login Error:",
-        String(err).includes("email_not_confirmed")
+        String(err)
       );
       if (String(err).includes("email_not_confirmed")) {
         setMessage("Please check your email to confirm your account!");
