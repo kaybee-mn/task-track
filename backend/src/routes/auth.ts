@@ -41,10 +41,10 @@ const authRoutes = async (fastify: FastifyInstance) => {
         emailRedirectTo: redirectUrl,
       },
     });
-    if (error) {
+    if (error||!data||!data.session) {
       return reply
         .code(400)
-        .send({ error: "Supabase signup error: " + error.message });
+        .send({ error: "Supabase signup error" + (error&&": "+error.message) });
     }
     // Create user in your DB (optional)
     await fastify.prisma.user
@@ -55,13 +55,11 @@ const authRoutes = async (fastify: FastifyInstance) => {
           timezone: timezone,
         },
       })
-      .then((err) => reply.code(400).send({ error: "error", err }));
+      .then((err:any) => reply.code(400).send({ error: "error", err }));
 
-    const token = jwt.sign({ userId: data.user?.id }, JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const session = {access_token:data.session.access_token, expires_at: data.session.expires_at, expires_in: data.session.expires_in, refresh_token: data.session.refresh_token, token_type: data.session.token_type}
 
-    return reply.send({ token });
+    return reply.send( session );
   });
 
   // Login
@@ -79,9 +77,9 @@ const authRoutes = async (fastify: FastifyInstance) => {
       return reply.code(401).send({ error });
     }
 
-    const session = data.session
+    const session = {access_token:data.session.access_token, expires_at: data.session.expires_at, expires_in: data.session.expires_in, refresh_token: data.session.refresh_token, token_type: data.session.token_type}
 
-    return reply.send( {session} );
+    return reply.send( session );
   });
 };
 

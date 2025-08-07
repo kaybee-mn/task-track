@@ -6,6 +6,7 @@ import prismaPlugin from './plugins/prisma';
 import authPlugin from './plugins/auth';
 import tasksRoutes from './routes/tasks';
 import authRoutes from "./routes/auth";
+import moodRoutes from "./routes/mood";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ await fastify.register(prismaPlugin);
 await fastify.register(authPlugin);
 await fastify.register(tasksRoutes);
 await fastify.register(authRoutes);
+await fastify.register(moodRoutes);
 
 // run server on port 3000
 const start = async () => {

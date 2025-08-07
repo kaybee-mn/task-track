@@ -17,6 +17,8 @@ import {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { ThemedButton } from "@/components/ThemedButton";
+import MoodChecker from "@/components/taskpage/MoodChecker";
+import { getMostRecentMood } from "@/api/logService";
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -40,10 +42,13 @@ export default function HomeScreen() {
 
   useEffect(() => {
     onRefresh();
+    getMostRecentMood();
   }, []);
 
   const onRefresh = async () => {
-    getUserTasks({ setTasks, setRefreshing });
+    setRefreshing(true);
+    setTasks(await getUserTasks() as Task[]);
+    setRefreshing(false);
   };
   if (refreshing) {
     return <Loading />;
@@ -64,6 +69,7 @@ export default function HomeScreen() {
         </ThemedView>
         <AddTask />
       </ThemedView>
+      <MoodChecker />
       <ThemedView style={styles.stepContainer}>
         <ThemedButton
           onPress={() => showMode()}
@@ -92,6 +98,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
     padding: 48,
-    marginTop:24
+    marginTop: 24,
   },
 });

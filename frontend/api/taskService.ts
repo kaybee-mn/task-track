@@ -3,14 +3,7 @@ import { Task } from "../../shared/types/task";
 import { getToken } from "./tokenService";
 import { ROUTES } from "@/constants/routes";
 
-const getUserTasks = async ({
-  setTasks,
-  setRefreshing,
-}: {
-  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
-  setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
-  setRefreshing(true);
+const getUserTasks = async () => {
   const token = await getToken();
   if (!token) {
     console.warn("No token found.");
@@ -24,14 +17,10 @@ const getUserTasks = async ({
       Authorization: `Bearer ${token}`,
     },
   });
-  const  taskData  = await response.json();
-  setTimeout(() => {
-    // Update your data here
-    if (taskData && Array.isArray(taskData)) {
-      setTasks(taskData);
-    }
-    setRefreshing(false);
-  }, 500); // Simulate a 2-second delay
+  const taskData = await response.json();
+  if (taskData && Array.isArray(taskData)) {
+    return taskData
+  }
 };
 
 const createTask = async ({
@@ -60,9 +49,7 @@ const createTask = async ({
     console.error("Failed to create task:", errorText);
   }
 
-  setTimeout(() => {
-    setRefreshing(false);
-    router.replace(ROUTES.HOME)
-  }, 500);
+  setRefreshing(false);
+  router.push(ROUTES.HOME);
 };
-export { getUserTasks,createTask };
+export { getUserTasks, createTask };

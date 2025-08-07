@@ -14,7 +14,6 @@ import { ThemedView } from "../ThemedView";
 
 export default function TaskBlock({ task }: { task: Task }) {
   const [checked, setChecked] = useState(false);
-  console.log("Taskblock ", task);
   const styles = getStyles(task.duration || 300);
   return (
     <ThemedView style={styles.item}>

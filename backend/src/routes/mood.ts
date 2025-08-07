@@ -4,7 +4,10 @@ import type { FastifyPluginAsync } from "fastify";
 
 type CreateMoodBody = {
   mood: number;
-  notes?: string;
+  note?: string;
+};
+type UpdateMoodBody = {
+  note: string;
 };
 declare module "fastify" {
   interface FastifyRequest {
@@ -14,12 +17,29 @@ declare module "fastify" {
   }
 }
 
-const taskRoutes: FastifyPluginAsync = async (fastify) => {
+const moodRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.addHook("preHandler", fastify.authenticate);
 
-  fastify.get("/mood", async (request, reply) => {
+  fastify.put("/mood/:id", async (request, reply) => {
     const userId = request.user.id;
-    const data = await fastify.prisma.mood.findMany({ where: { userId } });
+    const body = request.body as UpdateMoodBody;
+    const params = request.params as {id:string}
+    // make sure logged in user owns this mood
+    const mood = await fastify.prisma.mood.findUnique({
+      where: { id: params.id },
+    });
+    if (!mood || mood.userId !== userId) {
+      return reply
+        .status(403)
+        .send({ error: "Not authorized to update this mood" });
+    }
+    //update mood with new note
+    const data = await fastify.prisma.mood.update({
+      where: { id: params.id },
+      data: {
+        notes: body.note,
+      },
+    });
     return reply.send(data);
   });
 
@@ -35,10 +55,9 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
         user: { connect: { id: userId } },
         mood: {
           create: {
-              mood: body.mood,
-              notes: body.notes ? body.notes : "",
-              user: { connect: { id: userId } },
-            
+            mood: body.mood,
+            notes: body.note ? body.note : "",
+            user: { connect: { id: userId } },
           },
         },
       },
@@ -48,4 +67,4 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
   });
 };
 
-export default taskRoutes;
+export default moodRoutes;

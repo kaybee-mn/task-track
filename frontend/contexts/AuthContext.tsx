@@ -1,11 +1,9 @@
 import { useEffect, useState, ReactNode } from "react";
 import { Session } from "@supabase/supabase-js";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "../api/supabaseClient";
 import { router, usePathname } from "expo-router";
 import { ROUTES } from "@/constants/routes";
 
-import { View, ActivityIndicator } from "react-native";
 import Loading from "@/components/Loading";
 
 type Props = {
@@ -20,7 +18,6 @@ export default function AuthWrapper({ children }: Props) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      console.log(session)
       setLoading(false);
       if (!session && !(pathname === ROUTES.LOGIN || pathname === ROUTES.SIGNUP))
         router.replace(ROUTES.LOGIN);

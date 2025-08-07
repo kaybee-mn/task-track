@@ -94,7 +94,6 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
     };
-    console.log(JSON.stringify(d), "\n\n\n");
     const task = await fastify.prisma.task.create(d);
     return reply.send(task);
   });

@@ -29,7 +29,6 @@ const Login = () => {
     const isValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(
       password
     );
-    console.log(isValid, password);
     setIsValidPassword(isValid);
     return isValid;
   };
@@ -64,7 +63,7 @@ const Login = () => {
       }
       await AsyncStorage.setItem("session", JSON.stringify(data.session));
       console.log("Login successful", data);
-      router.replace(ROUTES.HOME);
+      router.push(ROUTES.HOME);
     } catch (err) {
       console.error(
         "Login Error:",
@@ -109,6 +108,7 @@ const Login = () => {
           secureTextEntry={true}
           onChangeText={setPassword}
           value={password}
+          onSubmitEditing={handleLogin}
         />
         {message && (
           <ThemedText type="error" style={{ textAlign: "center" }}>
@@ -132,7 +132,7 @@ const Login = () => {
         <ThemedButton
           text="Create an Account"
           onPress={() => {
-            router.replace(ROUTES.SIGNUP);
+            router.push(ROUTES.SIGNUP);
           }}
           type="subtitle"
         />
