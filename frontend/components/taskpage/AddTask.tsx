@@ -11,7 +11,7 @@ type Props = {
 export default function AddTask({}:Props){
     // style={{}}
     const handlePress=()=>{
-        router.replace(ROUTES.ADD);
+        router.push(ROUTES.ADD);
     }
     return(
         <TouchableOpacity style={{alignSelf:"flex-end"}} onPress={handlePress}>

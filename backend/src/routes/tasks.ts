@@ -71,6 +71,7 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
       recurrenceInfo,
       sortingInfo,
     } = body;
+    
     const d = {
       data: {
         title,
@@ -97,6 +98,10 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
     const task = await fastify.prisma.task.create(d);
     return reply.send(task);
   });
+
+  fastify.post('/tasks/complete/:id',async(request,reply)=>{
+    
+  })
 };
 
 export default taskRoutes;

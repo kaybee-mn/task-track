@@ -37,6 +37,7 @@ model Task {
   sortingInfo SortingInfo?
   startDate       DateTime
   logs        Log[]
+  completed  Boolean  @default(false)
 }
 
 model RecurrenceInfo {

@@ -20,6 +20,7 @@ import {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { createTask } from "@/api/taskService";
+import BackButton from "@/components/BackButton";
 
 type Props = {
   task?: Task;
@@ -97,6 +98,7 @@ const Add = ({ task }: Props) => {
     <ScrollView style={{}}>
       <ThemedView style={[styles.mainContainer, { paddingBottom: 180 }]}>
         <ThemedView style={styles.titleContainer}>
+          <BackButton/>
           <ThemedText type="title">Add/Edit Task</ThemedText>
         </ThemedView>
         {/* title text input */}
