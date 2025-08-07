@@ -71,7 +71,7 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
       recurrenceInfo,
       sortingInfo,
     } = body;
-    
+
     const d = {
       data: {
         title,
@@ -94,14 +94,42 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
     };
-    console.log(JSON.stringify(d),'\n\n\n');
+    console.log(JSON.stringify(d), "\n\n\n");
     const task = await fastify.prisma.task.create(d);
     return reply.send(task);
   });
 
-  fastify.post('/tasks/complete/:id',async(request,reply)=>{
-    
-  })
+  fastify.post("/tasks/complete/:id", async (request, reply) => {
+    const userId = request.user.id;
+    const body = request.body as { completed: boolean };
+    const task = await fastify.prisma.task.findUnique({
+      where: { id: request.id },
+    });
+
+    if (!task || task.userId !== userId) {
+      return reply
+        .status(403)
+        .send({ error: "Not authorized to update this task" });
+    }
+    await fastify.prisma.task.update({
+      where: {
+        id: request.id,
+      },
+      data: {
+        completed: body.completed,
+      },
+    });
+    fastify.prisma.log.create({
+      data: {
+        type: "task",
+        timestamp: new Date(),
+        user: { connect: { id: userId } },
+        task: {
+          connect: { id: request.id },
+        },
+      },
+    });
+  });
 };
 
 export default taskRoutes;
