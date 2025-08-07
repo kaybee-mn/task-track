@@ -23,6 +23,27 @@ const getUserTasks = async () => {
   }
 };
 
+const getDailyUserTasks = async (date:Date) => {
+  const token = await getToken();
+  if (!token) {
+    console.warn("No token found.");
+    return;
+  }
+
+  const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/tasks/daily`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body:JSON.stringify(date)
+  });
+  const taskData = await response.json();
+  if (taskData && Array.isArray(taskData)) {
+    return taskData
+  }
+};
+
 const createTask = async ({
   data,
   setRefreshing,
@@ -52,4 +73,4 @@ const createTask = async ({
   setRefreshing(false);
   router.push(ROUTES.HOME);
 };
-export { getUserTasks, createTask };
+export { getUserTasks, createTask, getDailyUserTasks };

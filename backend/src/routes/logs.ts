@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { getUserTasks } from "../services/tasks";
+import { getUserTasks } from "../services/taskService.ts";
 import type { FastifyPluginAsync } from "fastify";
 
 declare module "fastify" {

@@ -72,7 +72,7 @@ export default function HomeScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    const tasks = await getUserTasks();
+    const tasks = await getDailyUserTasks();
     setTasks(tasks as Task[]);
     setRefreshing(false);
   };

@@ -37,6 +37,7 @@ export default fp(async (fastify) => {
       }
       const prismaUser = await fastify.prisma.user.findFirst({where:{supabaseId:user?.id}})
       request.user = {...user,...prismaUser}
+      console.log("done with auth plugin")
     } catch (err) {
       console.error("JWT verification failed:", err);
       return reply.status(403).send({ error: "Invalid token", err });

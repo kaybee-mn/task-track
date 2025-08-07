@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { getUserTasks } from "../services/tasks";
+import { getUserTasks } from "../services/taskService";
 import type { FastifyPluginAsync } from "fastify";
 
 type CreateMoodBody = {
@@ -23,7 +23,7 @@ const moodRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.put("/mood/:id", async (request, reply) => {
     const userId = request.user.id;
     const body = request.body as UpdateMoodBody;
-    const params = request.params as {id:string}
+    const params = request.params as { id: string };
     // make sure logged in user owns this mood
     const mood = await fastify.prisma.mood.findUnique({
       where: { id: params.id },
