@@ -24,6 +24,7 @@ const getUserTasks = async () => {
 };
 
 const getDailyUserTasks = async (date:Date) => {
+  console.log(date)
   const token = await getToken();
   if (!token) {
     console.warn("No token found.");

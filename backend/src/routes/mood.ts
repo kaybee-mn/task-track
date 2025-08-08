@@ -1,5 +1,4 @@
 import { Prisma } from "@prisma/client";
-import { getUserTasks } from "../services/taskService";
 import type { FastifyPluginAsync } from "fastify";
 
 type CreateMoodBody = {

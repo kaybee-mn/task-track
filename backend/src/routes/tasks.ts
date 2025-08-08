@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { getUserTasks } from "../services/taskService";
+import { createTask, getDailyTasks } from "../services/taskService";
 import type { FastifyPluginAsync } from "fastify";
 
 declare module "fastify" {
@@ -19,18 +19,21 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
     return reply.send(data);
   });
 
-  fastify.get("/tasks/daily", async (request, reply) => {
+  fastify.get("/tasks/:date", async (request, reply) => {
     const userId = request.user.id;
-    const task = await getUserTasks(userId, request.body);
-    const body = request.body as { date: Date };
-    
-    return reply.send(data);
+    const tasks = await fastify.prisma.task.findMany({
+      where: { userId },
+      include: { recurrenceInfo: true, sortingInfo: true },
+    });
+    const params = request.params as { date: string };
+    const dailyTasks = await getDailyTasks(new Date(params.date), tasks);
+    return reply.send(dailyTasks);
   });
 
   fastify.post("/tasks", async (request, reply) => {
     const userId = request.user.id;
 
-    const task = await getUserTasks(userId, request.body);
+    const task = await createTask(userId, request.body);
     return reply.send(task);
   });
 

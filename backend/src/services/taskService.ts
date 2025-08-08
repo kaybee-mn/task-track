@@ -1,81 +1,90 @@
+import fastify from "fastify";
 import { prisma } from "../lib/prisma";
-// import { Task } from "@prisma/client";
+import type { CreateTaskBody, RecurrenceInfo, Task } from "../types/taskTypes";
+import {
+  recurrenceInfoToRRule,
+  stripTime,
+  stripTimePlusOne,
+} from "../lib/recurrenceUtil";
 
-type CreateTaskBody = {
-  id: string;
-  title: string;
-  userId: string;
-  recurrence: boolean; //if true, find recurrence info with matching id. if false, task is non-recurring
-  description: string;
-  startDate: Date;
-  duration: number;
-  recurrenceInfo: RecurrenceInfo;
-  sortingInfo: SortingInfo;
-};
+export async function createTask(userId: string, reqBody: any) {
+  const body = reqBody as CreateTaskBody;
 
-export type RecurrenceInfo = {
-  type: RecurrenceInfoType;
-  freq: number; //example: how many days
-  fromLastCompletion: boolean; //if true, next date is calculated from last day of completion. otherwise, from last due day
-  lastCompletionDate?: Date;
-  byDay?: string[]; //if weekly, string of weekdays: mo,tu,we,th,fr,sa,su. if monthly, days of month, if yearly, months
-  endType: number; //if 1 or 2, end on end. if 0, never end
-  end?: number; //if endType=1, number represents date of end, if 2, it is the amount of repeats remaining before end. if 0, no end
-  bySetPos?: number; // e.g., 1 = first, 3 = third, -1 = last
-};
-export type RecurrenceInfoType =
-  | "DAILY"
-  | "MONTHLY"
-  | "WEEKLY"
-  | "HOURLY"
-  | "MINUTELY"
-  | "YEARLY"
-  | "BYMONTHDAY";
+  const {
+    title,
+    description,
+    duration,
+    recurrence,
+    startDate,
+    recurrenceInfo,
+    sortingInfo,
+  } = body;
 
-export type SortingInfo = {
-  create: {
-    priority: number;
-    difficulty: number;
-    location: string;
-  };
-};
-
-export async function getUserTasks(userId: string, reqBody:any) {
-    const body = reqBody as CreateTaskBody;
-
-    const {
-      id,
+  const d = {
+    data: {
       title,
       description,
       duration,
       recurrence,
-      startDate,
-      recurrenceInfo,
-      sortingInfo,
-    } = body;
-
-    const d = {
-      data: {
-        title,
-        description,
-        duration,
-        recurrence,
-        startDate: startDate,
-        ...(recurrence && {
-          recurrenceInfo: {
-            ...recurrenceInfo,
-          },
-        }),
-        sortingInfo: {
-          ...sortingInfo,
+      startDate: startDate,
+      ...(recurrence && {
+        recurrenceInfo: {
+          ...recurrenceInfo,
         },
-        user: {
-          connect: {
-            id: userId,
-          },
+      }),
+      sortingInfo: {
+        ...sortingInfo,
+      },
+      user: {
+        connect: {
+          id: userId,
         },
       },
-    };
-    const tasks = await prisma.task.create(d);
-    return tasks;
+    },
+  };
+  const tasks = await prisma.task.create(d);
+  return tasks;
+}
+
+export async function getDailyTasks(date: Date, tasks: Task[]) {
+  const matchingTasks = tasks.filter((task) => {
+    //if the task does not repeat
+    if (!task.recurrence)
+      return (
+        stripTime(date).getTime() ===
+        stripTime(new Date(task.startDate)).getTime()
+      );
+    try {
+      const taskRule = recurrenceInfoToRRule(
+        task.recurrenceInfo,
+        stripTime(new Date(task.startDate)).getTime()
+      );
+      console.log(
+        "rule: ",
+        taskRule,
+        "date: ",
+        date,
+        "datestart: ",
+        stripTime(date),
+        "dateend: ",
+        stripTimePlusOne(date),
+        "found: ",
+        taskRule.between(
+          stripTime(date),
+          stripTimePlusOne(date),
+          true // inclusive
+        )
+      );
+      const occurrences = taskRule.between(
+        stripTime(date),
+        stripTimePlusOne(date),
+        true // inclusive
+      );
+      return occurrences.length > 0;
+    } catch (err) {
+      console.error("Bad rrule:", task.recurrenceInfo, err);
+      return false;
+    }
+  });
+  return matchingTasks;
 }

@@ -10,7 +10,7 @@ import { Task } from "../../../shared/types/task";
 import { supabase } from "../../api/supabaseClient";
 import DailySchedule from "../../components/taskpage/DailySchedule";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getUserTasks } from "@/api/taskService";
+import { getDailyUserTasks, getUserTasks } from "@/api/taskService";
 import Loading from "@/components/Loading";
 import {
   DateTimePickerAndroid,
@@ -72,7 +72,8 @@ export default function HomeScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    const tasks = await getDailyUserTasks();
+    // const tasks = await getUserTasks();
+    const tasks = await getDailyUserTasks(date);
     setTasks(tasks as Task[]);
     setRefreshing(false);
   };
@@ -125,8 +126,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     width: "100%",
     padding: 48,
     marginTop: 24,
