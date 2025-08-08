@@ -24,20 +24,18 @@ const getUserTasks = async () => {
 };
 
 const getDailyUserTasks = async (date:Date) => {
-  console.log(date)
   const token = await getToken();
   if (!token) {
     console.warn("No token found.");
     return;
   }
 
-  const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/tasks/daily`, {
+  const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/tasks/${date}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-    },
-    body:JSON.stringify(date)
+    }
   });
   const taskData = await response.json();
   if (taskData && Array.isArray(taskData)) {

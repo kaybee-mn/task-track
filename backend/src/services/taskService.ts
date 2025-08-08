@@ -59,22 +59,6 @@ export async function getDailyTasks(date: Date, tasks: Task[]) {
         task.recurrenceInfo,
         stripTime(new Date(task.startDate)).getTime()
       );
-      console.log(
-        "rule: ",
-        taskRule,
-        "date: ",
-        date,
-        "datestart: ",
-        stripTime(date),
-        "dateend: ",
-        stripTimePlusOne(date),
-        "found: ",
-        taskRule.between(
-          stripTime(date),
-          stripTimePlusOne(date),
-          true // inclusive
-        )
-      );
       const occurrences = taskRule.between(
         stripTime(date),
         stripTimePlusOne(date),

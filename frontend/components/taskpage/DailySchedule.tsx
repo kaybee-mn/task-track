@@ -1,14 +1,9 @@
 import {
-  View,
   StyleSheet,
   FlatList,
-  StatusBar,
   Dimensions,
 } from "react-native";
 import TaskBlock from "./TaskBlock";
-import { Task } from "../../../shared/types/task";
-import { ThemedText } from "../ThemedText";
-import ParallaxScrollView from "../ParallaxScrollView";
 import { ThemedView } from "../ThemedView";
 
 export default function DailySchedule({

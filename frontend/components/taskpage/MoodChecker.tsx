@@ -27,7 +27,7 @@ const MoodChecker = ({ setRecentMood }: Props) => {
 
   const addNote = () => {
     setShowNote(false);
-    setRecentMood(mood.current?.timestamp);
+    setRecentMood(Date.now());
     if (!note.trim()) {
       return;
     }
