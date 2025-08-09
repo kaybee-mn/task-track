@@ -43,7 +43,7 @@ export function recurrenceInfoToRRule(info: RecurrenceInfo, startDate: number) {
   }
 
   if (info.endType === 1 && info.end) {
-    options.until = new Date(info.end);
+    options.until = new Date(Number(info.end));
   } else if (info.endType === 2 && info.end) {
     options.count = info.end;
   }
