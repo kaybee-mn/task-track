@@ -82,7 +82,6 @@ const MoodChecker = ({ setRecentMood }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    paddingVertical: 16,
     gap: 8,
   },
   mainContainer: {

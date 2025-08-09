@@ -28,8 +28,8 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(task)" options={{ headerShown: false }} />
           <Stack.Screen name="confirm"/>
-          <Stack.Screen name="add" options={{ headerShown: false }}/>
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />

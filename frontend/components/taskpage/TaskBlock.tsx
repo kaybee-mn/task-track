@@ -1,27 +1,34 @@
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import { Task } from "../../../shared/types/task";
+import { SortedTask, Task } from "../../../shared/types/task";
 import { ThemedText } from "../ThemedText";
 import Checkbox from "../addtaskpage/Checkbox";
 import { ThemedView } from "../ThemedView";
+import { router } from "expo-router";
+import { ROUTES } from "@/constants/routes";
 
-export default function TaskBlock({ task }: { task: Task }) {
-  const [checked, setChecked] = useState(false);
+export default function TaskBlock({
+  task,
+  onCheck,
+  startState = false,
+}: {
+  task: SortedTask;
+  onCheck: () => void;
+  startState?: boolean;
+}) {
+  const [checked, setChecked] = useState(task.completed);
   const styles = getStyles(task.duration || 300);
   return (
     <ThemedView style={styles.item}>
       <Checkbox
-        value={checked}
-        onValueChange={() => setChecked((prev) => !prev)}
+        value={task.completed}
+        onValueChange={() => {
+          onCheck();
+        }}
       >
-        <ThemedText type="subtitle">{task.title}</ThemedText>
+        <TouchableOpacity onPress={()=>{router.push(ROUTES.TASK)}}>
+          <ThemedText type="subtitle">{task.title}</ThemedText>
+        </TouchableOpacity>
       </Checkbox>
     </ThemedView>
   );

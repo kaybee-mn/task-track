@@ -19,27 +19,31 @@ const getUserTasks = async () => {
   });
   const taskData = await response.json();
   if (taskData && Array.isArray(taskData)) {
-    return taskData
+    return taskData;
   }
 };
 
-const getDailyUserTasks = async (date:Date) => {
+const getDailyUserTasks = async (date: Date) => {
   const token = await getToken();
   if (!token) {
     console.warn("No token found.");
     return;
   }
 
-  const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/tasks/${date}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  const response = await fetch(
+    `${process.env.EXPO_PUBLIC_API_URL}/tasks/${date}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     }
-  });
+  );
   const taskData = await response.json();
   if (taskData && Array.isArray(taskData)) {
-    return taskData
+    const sortedTaskData = await sortTasks(taskData);
+    return sortedTaskData;
   }
 };
 
@@ -72,4 +76,12 @@ const createTask = async ({
   setRefreshing(false);
   router.push(ROUTES.HOME);
 };
-export { getUserTasks, createTask, getDailyUserTasks };
+
+const sortTasks =async (tasks: Task[]) => {
+ const sortedTasks = tasks.map((task, i) => {
+    console.log({ ...task, index: i })
+    return { ...task, index: i };
+  });
+  return sortedTasks;
+};
+export { getUserTasks, createTask, getDailyUserTasks, sortTasks };

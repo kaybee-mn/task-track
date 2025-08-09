@@ -8,6 +8,21 @@ export type Task = {
   duration: number;
   recurrenceInfo: RecurrenceInfo;
   sortingInfo: SortingInfo;
+  completed:boolean;
+};
+
+export type SortedTask = {
+  id: string;
+  index:number;
+  title: string;
+  user_id: string;
+  recurrence: boolean; //if true, find recurrence info with matching id. if false, task is non-recurring
+  description: string;
+  startDate: number;
+  duration: number;
+  recurrenceInfo: RecurrenceInfo;
+  sortingInfo: SortingInfo;
+  completed:boolean;
 };
 
 export type RecurrenceInfo = {

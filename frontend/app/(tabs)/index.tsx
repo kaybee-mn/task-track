@@ -6,7 +6,7 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useEffect, useRef, useState } from "react";
-import { Task } from "../../../shared/types/task";
+import { SortedTask, Task } from "../../../shared/types/task";
 import { supabase } from "../../api/supabaseClient";
 import DailySchedule from "../../components/taskpage/DailySchedule";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,7 +22,7 @@ import { getMostRecentMood } from "@/api/logService";
 
 export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<SortedTask[]>([]);
   const user_token = useRef<string | null>(null);
   const [date, setDate] = useState<Date>(new Date());
   const [recentMood, setRecentMood] = useState<number>();
@@ -54,13 +54,17 @@ export default function HomeScreen() {
   useEffect(() => {
     if (recentMood) {
       const now = Date.now();
-    const elapsed = now - recentMood;
-    const waitTime = 3600000 * 3 - elapsed; // 3 hours in ms
+      const elapsed = now - recentMood;
+      const waitTime = 3600000 * 3 - elapsed; // 3 hours in ms
 
-      if (waitTime<=0) {
+      if (waitTime <= 0) {
         setShowMoodChecker(true);
       } else {
-        console.log("new recent mood. wait time: ", (waitTime/3600000)," hours");
+        console.log(
+          "new recent mood. wait time: ",
+          waitTime / 3600000,
+          " hours"
+        );
         setShowMoodChecker(false);
         const timeout = setTimeout(() => {
           setShowMoodChecker(true);
@@ -70,11 +74,24 @@ export default function HomeScreen() {
     }
   }, [recentMood]);
 
+  const toggleTaskCompletion = (taskId: string) => {
+    setTasks((prev) => {
+      const updated = prev.map((task) =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      );
+      // move completed task to bottom
+      return updated.sort((a, b) => {
+        if (a.completed === b.completed) return a.index-b.index;
+        return a.completed ? 1 : -1;
+      });
+    });
+  };
+
   const onRefresh = async () => {
     setRefreshing(true);
     // const tasks = await getUserTasks();
     const tasks = await getDailyUserTasks(date);
-    setTasks(tasks as Task[]);
+    setTasks(tasks as SortedTask[]);
     setRefreshing(false);
   };
   if (refreshing) {
@@ -83,17 +100,11 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
-        <ThemedView style={styles.titleContainer}>
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText type="title">
           <HelloWave />
-          <ThemedText type="title">Welcome!</ThemedText>
-        </ThemedView>
+          Welcome!
+        </ThemedText>
         <AddTask />
       </ThemedView>
       {showMoodChecker && <MoodChecker setRecentMood={setRecentMood} />}
@@ -102,12 +113,13 @@ export default function HomeScreen() {
         text={date.toLocaleDateString()}
         type="subtitle"
       />
-      <ThemedView style={styles.stepContainer}>
+      <ThemedView style={{ flex: 4 }}>
         <DailySchedule
           sortedDailyTasks={tasks}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
+          onCompleteTask={toggleTaskCompletion}
         />
       </ThemedView>
     </ThemedView>
@@ -117,18 +129,16 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
-  },
-  stepContainer: {
-    gap: 8,
-    marginVertical: 24,
+    justifyContent: "space-between",
+    width: "100%",
   },
   container: {
     flex: 1,
     width: "100%",
     padding: 48,
     marginTop: 24,
-    alignItems:'center'
+    alignItems: "center",
+    flexDirection: "column",
+    gap: 16,
   },
 });

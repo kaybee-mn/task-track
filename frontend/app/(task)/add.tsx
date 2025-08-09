@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet } from "react-native";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedButton } from "@/components/ThemedButton";
 import { useRef, useState } from "react";
-import { Task, RecurrenceInfo, SortingInfo } from "../../shared/types/task";
+import { Task, RecurrenceInfo, SortingInfo } from "../../../shared/types/task";
 
 import RadioButton from "@/components/addtaskpage/RadioButton";
 import InfoBox from "@/components/addtaskpage/InfoBox";
@@ -21,6 +21,7 @@ import {
 } from "@react-native-community/datetimepicker";
 import { createTask } from "@/api/taskService";
 import BackButton from "@/components/BackButton";
+import { Stack } from "expo-router";
 
 type Props = {
   task?: Task;
@@ -95,12 +96,14 @@ const Add = ({ task }: Props) => {
   };
 
   return (
+    <>
+    <Stack.Screen options={{ title: "Add Task" }} />
     <ScrollView style={{}}>
       <ThemedView style={[styles.mainContainer, { paddingBottom: 180 }]}>
-        <ThemedView style={styles.titleContainer}>
+        {/* <ThemedView style={styles.titleContainer}>
           <BackButton/>
           <ThemedText type="title">Add/Edit Task</ThemedText>
-        </ThemedView>
+        </ThemedView> */}
         {/* title text input */}
         <ThemedView style={styles.stepContainer}>
           <ThemedTextInput
@@ -160,6 +163,7 @@ const Add = ({ task }: Props) => {
         <ThemedButton text="Save!" onPress={handleSubmit} type="subtitle" />
       </ThemedView>
     </ScrollView>
+    </>
   );
 };
 const styles = StyleSheet.create({

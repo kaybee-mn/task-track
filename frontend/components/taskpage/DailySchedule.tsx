@@ -5,13 +5,16 @@ import {
 } from "react-native";
 import TaskBlock from "./TaskBlock";
 import { ThemedView } from "../ThemedView";
+import { SortedTask, Task } from "../../../shared/types/task";
 
 export default function DailySchedule({
   sortedDailyTasks,
-  refreshControl
+  refreshControl,
+  onCompleteTask
 }: {
-  sortedDailyTasks: any[];
-  refreshControl:any
+  sortedDailyTasks: SortedTask[];
+  refreshControl?:any;
+  onCompleteTask:(taskId:string)=>void
 }) {
   console.log("sortedDailyTasks", sortedDailyTasks);
   return (
@@ -19,9 +22,9 @@ export default function DailySchedule({
       <FlatList
         contentContainerStyle={styles.list}
         data={sortedDailyTasks}
-        renderItem={({ item }) => <TaskBlock task={item} />}
+        renderItem={({ item }) => <TaskBlock task={item} onCheck={()=>{onCompleteTask(item.id)}}/>}
         keyExtractor={(item) => item.id.toString()}
-        refreshControl={refreshControl}
+        refreshControl={refreshControl||undefined}
       />
     </ThemedView>
   );
@@ -32,8 +35,6 @@ const styles = StyleSheet.create({
     flex: 2,
     alignItems: "center",
     justifyContent: "center",
-
-    marginTop: 24,
     width: '100%',
   },
   list: {
