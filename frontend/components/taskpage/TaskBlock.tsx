@@ -24,9 +24,19 @@ export default function TaskBlock({
         onValueChange={() => {
           onCheck();
         }}
+        style={{alignItems:'flex-start'}}
       >
-        <TouchableOpacity onPress={()=>{router.push({pathname:ROUTES.TASK,params:{taskId:task.id}})}}>
-          <ThemedText type="subtitle">{task.title}</ThemedText>
+        <TouchableOpacity
+          onPress={() => {
+            router.push({ pathname: ROUTES.TASK, params: { taskId: task.id } });
+          }}
+        >
+          <ThemedText
+            type="subtitle"
+            style={{flex: 1, flexWrap: 'wrap',maxWidth: '90%' }}
+          >
+            {task.title}
+          </ThemedText>
         </TouchableOpacity>
       </Checkbox>
     </ThemedView>
@@ -39,5 +49,6 @@ const getStyles = (height: number) =>
       flex: 1,
       marginVertical: 8,
       flexDirection: "row",
+      flexWrap:'wrap',
     },
   });

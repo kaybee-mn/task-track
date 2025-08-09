@@ -14,11 +14,12 @@ export type RecurrenceInfo = {
   type: RecurrenceInfoType;
   freq: number; //example: how many days
   fromLastCompletion: boolean; //if true, next date is calculated from last day of completion. otherwise, from last due day
-  lastCompletionDate?: Date;
-  byDay?: string[]; //if weekly, string of weekdays: mo,tu,we,th,fr,sa,su. if monthly, days of month, if yearly, months
+  lastCompletionDate?: Date|null;
+  byDay?: string[]|null; //if weekly, string of weekdays: mo,tu,we,th,fr,sa,su. if monthly, days of month, if yearly, months
   endType: number; //if 1 or 2, end on end. if 0, never end
-  end?: number; //if endType=1, number represents date of end, if 2, it is the amount of repeats remaining before end. if 0, no end
-  bySetPos?: number; // e.g., 1 = first, 3 = third, -1 = last
+  end?: number|null; //if endType= 2, it is the amount of repeats remaining before end
+  endDate?:Date|null;//endDate, if endType = 2
+  bySetPos?: number|null; // e.g., 1 = first, 3 = third, -1 = last
 };
 export type RecurrenceInfoType =
   | "DAILY"
@@ -30,21 +31,20 @@ export type RecurrenceInfoType =
   | "BYMONTHDAY";
 
 export type SortingInfo = {
-  create: {
     priority: number;
     difficulty: number;
     location: string;
-  };
+
 };
 
 export type Task = {
   id: string;
   title: string;
-  user_id: string;
+  userId: string;
   recurrence: boolean; //if true, find recurrence info with matching id. if false, task is non-recurring
   description: string;
-  startDate: number;
+  startDate: Date;
   duration: number;
-  recurrenceInfo: RecurrenceInfo;
-  sortingInfo: SortingInfo;
+  recurrenceInfo?: RecurrenceInfo|null;
+  sortingInfo: SortingInfo|null;
 };

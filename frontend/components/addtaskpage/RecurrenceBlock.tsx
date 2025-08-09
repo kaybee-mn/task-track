@@ -19,7 +19,7 @@ type Props = {
 };
 
 export type RecRef = {
-  returnRecInfo: () => RecurrenceInfo|null;
+  returnRecInfo: () => RecurrenceInfo | null;
 };
 
 const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
@@ -50,19 +50,33 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
     "Dec",
   ];
   const dayOfMonthOptions = ["1st", "2nd", "3rd", "4th", "5th", "Last"];
-  const [selectedRecurrence, setSelectedRecurrence] = useState<number>(rInfo?.type==="BYMONTHDAY"?2:rInfo?1: 0);
+  const [selectedRecurrence, setSelectedRecurrence] = useState<number>(
+    rInfo?.type === "BYMONTHDAY" ? 2 : rInfo ? 1 : 0
+  );
   const [recFreq, setRecFreq] = useState<string | undefined>(
     rInfo?.freq ? String(rInfo?.freq) : undefined
   );
   const [recType, setRecType] = useState<string>(rInfo?.type || "Days");
   const [monthDays, setMonthDays] = useState<string>();
-  const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>(rInfo?.byDay&&(rInfo?.type==="BYMONTHDAY"||rInfo.type==="WEEKLY")?rInfo.byDay:["Su"]);
+  const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>(
+    rInfo?.byDay && (rInfo?.type === "BYMONTHDAY" || rInfo.type === "WEEKLY")
+      ? rInfo.byDay
+      : ["Su"]
+  );
   const [selectedMonths, setSelectedMonths] = useState<boolean[]>([]);
-  const [dayOfMonth, setDayOfMonth] = useState<string>(rInfo?.bySetPos?dayOfMonthOptions[rInfo?.bySetPos-1]:rInfo?.bySetPos===-1?"Last":"1st");
+  const [dayOfMonth, setDayOfMonth] = useState<string>(
+    rInfo?.bySetPos
+      ? dayOfMonthOptions[rInfo?.bySetPos - 1]
+      : rInfo?.bySetPos === -1
+      ? "Last"
+      : "1st"
+  );
   const [end, setEnd] = useState<string>(new Date().toISOString());
   const [endCount, setEndCount] = useState<string>();
-  const [endSetting, setendSetting] = useState<number>(rInfo?.endType||0);
-  const [repeat, setRepeat] = useState<number>(rInfo?.fromLastCompletion&&rInfo?.fromLastCompletion===true?1:0); //index determines if rep happens from last completion or last due date
+  const [endSetting, setendSetting] = useState<number>(rInfo?.endType || 0);
+  const [repeat, setRepeat] = useState<number>(
+    rInfo?.fromLastCompletion && rInfo?.fromLastCompletion === true ? 1 : 0
+  ); //index determines if rep happens from last completion or last due date
   useEffect(() => {
     rInfo?.byDay;
   }, []);
@@ -87,7 +101,7 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
 
   const returnRecInfo = () => {
     let data = {};
-    if(selectedRecurrence===0){
+    if (selectedRecurrence === 0) {
       return null;
     }
     const updateData = (key: string, value: any) => {
@@ -125,12 +139,12 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
     // save end settings
     if (endSetting > 0) {
       if (endSetting === 1) {
-        updateData("end", new Date(end).getTime());
+        updateData("endDate", new Date(end));
       } else {
-        updateData("end", endCount);
+        updateData("end", Number(endCount));
       }
     }
-    updateData("freq", Number(recFreq||"1"));
+    updateData("freq", Number(recFreq || "1"));
     updateData("endType", endSetting);
     updateData("fromLastCompletion", Boolean(repeat));
     return data as RecurrenceInfo;
@@ -183,7 +197,9 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
                 }}
                 value={selectedWeekdays.includes(day)}
                 key={index}
-              >{day}</Checkbox>
+              >
+                {day}
+              </Checkbox>
             ))}
           </ThemedView>
         )}
@@ -318,8 +334,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    flexWrap:'wrap',
-    width:'90%',
+    flexWrap: "wrap",
+    width: "90%",
   },
   colContainer: {
     gap: 8,

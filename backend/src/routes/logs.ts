@@ -28,6 +28,11 @@ const logRoutes: FastifyPluginAsync = async (fastify) => {
       },
       take: 1,
     });
+    if(!mood[0]?.timestamp){
+      return reply
+        .status(403)
+        .send({ error: "No moods!" });
+    }
     return reply.send(mood[0].timestamp);
   });
 };

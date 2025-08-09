@@ -79,7 +79,6 @@ const createTask = async ({
 
 const sortTasks =async (tasks: Task[]) => {
  const sortedTasks = tasks.map((task, i) => {
-    console.log({ ...task, index: i })
     return { ...task, index: i };
   });
   return sortedTasks;

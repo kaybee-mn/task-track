@@ -20,7 +20,7 @@ export default function ThemedSmallTextInput({ type = "default" ,text,onChangeTe
     <View style={styles.container}>
       <Text
         style={[styles.hiddenText, styles[type]]}
-        onLayout={(e) => setInputWidth(e.nativeEvent.layout.width + 2)} // padding
+        onLayout={(e) => setInputWidth(e.nativeEvent.layout.width + 5)} // padding
       >
         {text}
       </Text>

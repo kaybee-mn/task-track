@@ -65,6 +65,7 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
         task: {
           connect: { id: request.id },
         },
+        note:"Completed Task: "+ task.title
       },
     });
   });

@@ -32,12 +32,15 @@ const moodRoutes: FastifyPluginAsync = async (fastify) => {
         .status(403)
         .send({ error: "Not authorized to update this mood" });
     }
+    if(!body.note.trim()){
+      return reply
+        .status(403)
+        .send({ error: "No note sent" });
+    }
     //update mood with new note
-    const data = await fastify.prisma.mood.update({
-      where: { id: params.id },
-      data: {
-        notes: body.note,
-      },
+    const data = await fastify.prisma.log.updateMany({
+      where: { moodId: params.id },
+      data: { note: body.note },
     });
     return reply.send(data);
   });

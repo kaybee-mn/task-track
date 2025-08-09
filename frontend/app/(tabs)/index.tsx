@@ -45,15 +45,19 @@ export default function HomeScreen() {
   useEffect(() => {
     const init = async () => {
       const rM = await getMostRecentMood();
-      setRecentMood(new Date(rM).getTime());
+      if (rM) setRecentMood(new Date(rM).getTime());
+      else {
+        console.log("no recent mood");
+        setShowMoodChecker(true);
+      }
     };
     init();
     onRefresh();
   }, []);
 
-  useEffect(()=>{
-    onRefresh()
-  },[date])
+  useEffect(() => {
+    onRefresh();
+  }, [date]);
 
   useEffect(() => {
     if (recentMood) {

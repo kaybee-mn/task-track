@@ -41,8 +41,9 @@ model RecurrenceInfo {
   freq               Int
   fromLastCompletion Boolean
   byDay              String[]
-  end                BigInt?
+  end                Int?
   bySetPos           Int?
+  endDate            DateTime?
   endType            Int
   lastCompletionDate DateTime?
   task               Task           @relation(fields: [taskId], references: [id])
@@ -60,7 +61,6 @@ model SortingInfo {
 model Mood {
   id     String @id @default(cuid())
   mood   Int
-  notes  String
   userId String
   logs   Log[]
   user   User   @relation(fields: [userId], references: [id])
@@ -73,6 +73,7 @@ model Log {
   moodId    String?
   timestamp DateTime
   userId    String?
+  note      String?
   task      Task?    @relation(fields: [itemId], references: [id])
   mood      Mood?    @relation(fields: [moodId], references: [id])
   user      User?    @relation(fields: [userId], references: [id])

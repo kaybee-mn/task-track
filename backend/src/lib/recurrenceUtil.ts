@@ -1,9 +1,7 @@
-
 import rrule from "rrule";
 const { RRule, Weekday } = rrule;
 type WeekdayType = InstanceType<typeof Weekday>;
 import type { RecurrenceInfo } from "../types/taskTypes";
-
 
 //maps to help parse recurrence object into RRule
 const freqMap: Record<RecurrenceInfo["type"], number> = {
@@ -31,8 +29,12 @@ export function recurrenceInfoToRRule(info: RecurrenceInfo, startDate: number) {
   const options: any = {
     freq: freqMap[info.type],
     interval: info.freq,
-    dtstart: new Date(startDate),
   };
+
+  options.dtstart =
+    info.fromLastCompletion && info.lastCompletionDate
+      ? new Date(info.lastCompletionDate)
+      : new Date(startDate);
 
   if (info.byDay?.length) {
     options.byweekday = info.byDay.map((day) => weekdayMap[day.toLowerCase()]);
@@ -42,8 +44,8 @@ export function recurrenceInfoToRRule(info: RecurrenceInfo, startDate: number) {
     options.bysetpos = info.bySetPos;
   }
 
-  if (info.endType === 1 && info.end) {
-    options.until = new Date(Number(info.end));
+  if (info.endType === 1 && info.endDate) {
+    options.until = new Date(info.endDate);
   } else if (info.endType === 2 && info.end) {
     options.count = info.end;
   }
@@ -51,11 +53,10 @@ export function recurrenceInfoToRRule(info: RecurrenceInfo, startDate: number) {
   return new RRule(options);
 }
 
-
 export function stripTime(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
 export function stripTimePlusOne(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate()+1);
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
 }

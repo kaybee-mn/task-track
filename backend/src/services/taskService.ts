@@ -42,14 +42,25 @@ export async function createTask(userId: string, reqBody: any) {
       },
     },
   };
-  const tasks = await prisma.task.create(d);
-  return tasks;
+  const task = await prisma.task.create(d);
+  await prisma.log.create({
+    data: {
+      type: "task",
+      timestamp: new Date(),
+      user: { connect: { id: userId } },
+      task: {
+        connect: { id: task.id },
+      },
+      note: "New Task: " + task.title,
+    },
+  });
+  return task;
 }
 
 export async function getDailyTasks(date: Date, tasks: Task[]) {
   const matchingTasks = tasks.filter((task) => {
     //if the task does not repeat
-    if (!task.recurrence)
+    if (!task.recurrence||!task.recurrenceInfo)
       return (
         stripTime(date).getTime() ===
         stripTime(new Date(task.startDate)).getTime()
