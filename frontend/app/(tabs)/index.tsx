@@ -25,7 +25,7 @@ export default function HomeScreen() {
   const { tasks, setTasks } = useContext(TaskContext);
   const [refreshing, setRefreshing] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
-  const [recentMood, setRecentMood] = useState<number>();
+  const [recentMood, setRecentMood] = useState<number|null>(null);
   const [showMoodChecker, setShowMoodChecker] = useState<boolean>(false);
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -45,9 +45,8 @@ export default function HomeScreen() {
   useEffect(() => {
     const init = async () => {
       const rM = await getMostRecentMood();
-      if (rM) setRecentMood(new Date(rM).getTime());
-      else {
-        console.log("no recent mood");
+      if (rM.ok) setRecentMood(new Date(rM).getTime());
+      else if(rM.error){
         setShowMoodChecker(true);
       }
     };
@@ -68,12 +67,12 @@ export default function HomeScreen() {
       if (waitTime <= 0) {
         setShowMoodChecker(true);
       } else {
+        setShowMoodChecker(false);
         console.log(
           "new recent mood. wait time: ",
           waitTime / 3600000,
           " hours"
         );
-        setShowMoodChecker(false);
         const timeout = setTimeout(() => {
           setShowMoodChecker(true);
         }, waitTime);

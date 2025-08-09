@@ -6,7 +6,7 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import { addMoodNote, logMood } from "@/api/moodService";
 
 type Props = {
-  setRecentMood: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setRecentMood: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
 const MoodChecker = ({ setRecentMood }: Props) => {
@@ -15,6 +15,7 @@ const MoodChecker = ({ setRecentMood }: Props) => {
   const mood = useRef<{ moodId: string; timestamp: number }>(undefined);
 
   useEffect(() => {
+    if(!mood.current)return
     // If the note is empty, start a 5 second timer to hide it
     if (!note.trim()) {
       const timer = setTimeout(() => {
@@ -26,12 +27,14 @@ const MoodChecker = ({ setRecentMood }: Props) => {
   }, [note]);
 
   const addNote = () => {
-    setShowNote(false);
     setRecentMood(Date.now());
     if (!note.trim()) {
       return;
     }
     addMoodNote(note, mood.current?.moodId || "");
+    const timer = setTimeout(() => {
+    setShowNote(false);
+      }, 200);
   };
   const handlePress = async (index: number) => {
     setNote("");
