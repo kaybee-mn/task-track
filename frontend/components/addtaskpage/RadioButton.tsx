@@ -20,7 +20,7 @@ export default function RadioButton({
     const styles = createStyles(index)
   return (
     <ThemedView style={styles.titleContainer}>
-      <TouchableOpacity onPress={setSelected} style={{}}>
+      <TouchableOpacity onPress={setSelected} style={{justifyContent:'center'}}>
         <Ionicons
           name={
             selected === index

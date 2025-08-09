@@ -14,13 +14,13 @@ export type Props = TextInputProps & {
 };
 
 export default function ThemedSmallTextInput({ type = "default" ,text,onChangeText}: Props) {
-  const [inputWidth, setInputWidth] = useState(20); // minimum width
+  const [inputWidth, setInputWidth] = useState(10); // minimum width
 
   return (
     <View style={styles.container}>
       <Text
         style={[styles.hiddenText, styles[type]]}
-        onLayout={(e) => setInputWidth(e.nativeEvent.layout.width + 10)} // padding
+        onLayout={(e) => setInputWidth(e.nativeEvent.layout.width + 2)} // padding
       >
         {text}
       </Text>

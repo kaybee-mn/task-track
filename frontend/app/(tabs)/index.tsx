@@ -51,6 +51,10 @@ export default function HomeScreen() {
     onRefresh();
   }, []);
 
+  useEffect(()=>{
+    onRefresh()
+  },[date])
+
   useEffect(() => {
     if (recentMood) {
       const now = Date.now();

@@ -16,7 +16,7 @@ export default function DailySchedule({
   refreshControl?:any;
   onCompleteTask:(taskId:string)=>void
 }) {
-  console.log("sortedDailyTasks", sortedDailyTasks);
+  // console.log("sortedDailyTasks", sortedDailyTasks);
   return (
     <ThemedView style={styles.container}>
       <FlatList

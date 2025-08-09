@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    padding: 8,
     zIndex: 10010,
   },
   dropdown: {

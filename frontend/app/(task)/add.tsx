@@ -28,9 +28,9 @@ import Loading from "@/components/Loading";
 const Add = () => {
   const { taskId } = useLocalSearchParams();
   const { tasks } = useContext(TaskContext);
-// if taskId was sent, get matching task
+  // if taskId was sent, get matching task
   const task = taskId ? tasks.find((t) => t.id === taskId) : null;
-  console.log(task)
+
   const recRef = useRef<RecRef>(null);
   const sortRef = useRef<SortRef>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -42,7 +42,9 @@ const Add = () => {
     task?.duration ? String(task?.duration) : ""
   );
   const [attemptedSubmit, setAttemptedSubmit] = useState<boolean>(false);
-  const [recurrence, setRecurrence] = useState<boolean>(task?.recurrence||false);
+  const [recurrence, setRecurrence] = useState<boolean>(
+    task?.recurrence || false
+  );
   const [date, setDate] = useState<Date>(
     task?.startDate ? new Date(task.startDate) : new Date()
   );
@@ -52,7 +54,7 @@ const Add = () => {
       setAttemptedSubmit(true);
       return;
     }
-    setLoading(true)
+    setLoading(true);
     let data = {};
     if (!duration) {
       // api call to suggest duration based on title, desc
@@ -68,10 +70,13 @@ const Add = () => {
     };
     // if recurrence is checked, get recurrence info
     if (recurrence) {
-      data = {
-        ...data,
-        recurrenceInfo: { create: recRef.current?.returnRecInfo() },
-      };
+      const rInfo = recRef.current?.returnRecInfo();
+      if (rInfo)
+        data = {
+          ...data,
+          recurrenceInfo: { create: rInfo },
+        };
+      else data = { ...data, recurrence: false };
     }
     // get sorting info from sortblock
     data = {
@@ -98,12 +103,12 @@ const Add = () => {
       is24Hour: true,
     });
   };
-  if(loading){
-    return <Loading/>
+  if (loading) {
+    return <Loading />;
   }
   return (
     <>
-      <Stack.Screen options={{ title: "Add Task" }} />
+      <Stack.Screen options={{ title: (task ? "Edit" : "Add") + " Task" }} />
       <ScrollView style={{}}>
         <ThemedView style={[styles.mainContainer, { paddingBottom: 180 }]}>
           {/* <ThemedView style={styles.titleContainer}>
