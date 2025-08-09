@@ -1,8 +1,8 @@
 export const ROUTES = {
-  LOGIN: "/login",
-  HOME: "/",
-  PROFILE: "/(tabs)/profile",
-  SIGNUP:"/signup",
-  ADD:'/add',
-  TASK:'/view'
+  LOGIN: "/login" as const,
+  HOME: "/" as const,
+  PROFILE: "/(tabs)/profile" as const,
+  SIGNUP:"/signup" as const,
+  ADD:'/add' as const,
+  TASK:'/view' as const
 };

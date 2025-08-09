@@ -5,7 +5,7 @@ import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { SortedTask, Task } from "../../../shared/types/task";
 import { supabase } from "../../api/supabaseClient";
 import DailySchedule from "../../components/taskpage/DailySchedule";
@@ -19,11 +19,11 @@ import {
 import { ThemedButton } from "@/components/ThemedButton";
 import MoodChecker from "@/components/taskpage/MoodChecker";
 import { getMostRecentMood } from "@/api/logService";
+import { TaskContext } from "@/contexts/TaskContext";
 
 export default function HomeScreen() {
+  const { tasks, setTasks } = useContext(TaskContext);
   const [refreshing, setRefreshing] = useState(false);
-  const [tasks, setTasks] = useState<SortedTask[]>([]);
-  const user_token = useRef<string | null>(null);
   const [date, setDate] = useState<Date>(new Date());
   const [recentMood, setRecentMood] = useState<number>();
   const [showMoodChecker, setShowMoodChecker] = useState<boolean>(false);
@@ -81,7 +81,7 @@ export default function HomeScreen() {
       );
       // move completed task to bottom
       return updated.sort((a, b) => {
-        if (a.completed === b.completed) return a.index-b.index;
+        if (a.completed === b.completed) return a.index - b.index;
         return a.completed ? 1 : -1;
       });
     });

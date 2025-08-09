@@ -10,6 +10,7 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import AuthWrapper from "@/contexts/AuthContext";
+import { TaskContext, TaskProvider } from "@/contexts/TaskContext";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -24,16 +25,20 @@ export default function RootLayout() {
 
   return (
     <AuthWrapper>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(task)" options={{ headerShown: false }} />
-          <Stack.Screen name="confirm"/>
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <TaskProvider>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(task)" options={{ headerShown: false }} />
+            <Stack.Screen name="confirm" />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </TaskProvider>
     </AuthWrapper>
   );
 }

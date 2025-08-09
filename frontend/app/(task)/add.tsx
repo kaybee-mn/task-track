@@ -3,7 +3,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { ScrollView, StyleSheet } from "react-native";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedButton } from "@/components/ThemedButton";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { Task, RecurrenceInfo, SortingInfo } from "../../../shared/types/task";
 
 import RadioButton from "@/components/addtaskpage/RadioButton";
@@ -21,13 +21,16 @@ import {
 } from "@react-native-community/datetimepicker";
 import { createTask } from "@/api/taskService";
 import BackButton from "@/components/BackButton";
-import { Stack } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
+import { TaskContext } from "@/contexts/TaskContext";
+import Loading from "@/components/Loading";
 
-type Props = {
-  task?: Task;
-};
-
-const Add = ({ task }: Props) => {
+const Add = () => {
+  const { taskId } = useLocalSearchParams();
+  const { tasks } = useContext(TaskContext);
+// if taskId was sent, get matching task
+  const task = taskId ? tasks.find((t) => t.id === taskId) : null;
+  console.log(task)
   const recRef = useRef<RecRef>(null);
   const sortRef = useRef<SortRef>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -39,7 +42,7 @@ const Add = ({ task }: Props) => {
     task?.duration ? String(task?.duration) : ""
   );
   const [attemptedSubmit, setAttemptedSubmit] = useState<boolean>(false);
-  const [recurrence, setRecurrence] = useState<boolean>(false);
+  const [recurrence, setRecurrence] = useState<boolean>(task?.recurrence||false);
   const [date, setDate] = useState<Date>(
     task?.startDate ? new Date(task.startDate) : new Date()
   );
@@ -49,6 +52,7 @@ const Add = ({ task }: Props) => {
       setAttemptedSubmit(true);
       return;
     }
+    setLoading(true)
     let data = {};
     if (!duration) {
       // api call to suggest duration based on title, desc
@@ -74,7 +78,7 @@ const Add = ({ task }: Props) => {
       ...data,
       sortingInfo: { create: sortRef.current?.returnSortInfo() },
     };
-    createTask({data:data as Task,setRefreshing:setLoading});
+    createTask({ data: data as Task, setRefreshing: setLoading });
   };
 
   const onChangeDate = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -94,75 +98,77 @@ const Add = ({ task }: Props) => {
       is24Hour: true,
     });
   };
-
+  if(loading){
+    return <Loading/>
+  }
   return (
     <>
-    <Stack.Screen options={{ title: "Add Task" }} />
-    <ScrollView style={{}}>
-      <ThemedView style={[styles.mainContainer, { paddingBottom: 180 }]}>
-        {/* <ThemedView style={styles.titleContainer}>
+      <Stack.Screen options={{ title: "Add Task" }} />
+      <ScrollView style={{}}>
+        <ThemedView style={[styles.mainContainer, { paddingBottom: 180 }]}>
+          {/* <ThemedView style={styles.titleContainer}>
           <BackButton/>
           <ThemedText type="title">Add/Edit Task</ThemedText>
         </ThemedView> */}
-        {/* title text input */}
-        <ThemedView style={styles.stepContainer}>
-          <ThemedTextInput
-            placeholder="Task Title"
-            value={title}
-            onChangeText={setTitle}
-          />
-          {!title.trim() && attemptedSubmit && (
-            <ThemedText type="error">Task needs a title!</ThemedText>
-          )}
+          {/* title text input */}
+          <ThemedView style={styles.stepContainer}>
+            <ThemedTextInput
+              placeholder="Task Title"
+              value={title}
+              onChangeText={setTitle}
+            />
+            {!title.trim() && attemptedSubmit && (
+              <ThemedText type="error">Task needs a title!</ThemedText>
+            )}
+          </ThemedView>
+          {/* description input */}
+          <ThemedView style={styles.stepContainer}>
+            <ThemedTextInput
+              placeholder="Description"
+              value={description}
+              onChangeText={setDescription}
+            />
+          </ThemedView>
+          {/* set date of first*/}
+          <ThemedView style={styles.titleContainer}>
+            <ThemedText>Date: </ThemedText>
+            <ThemedButton
+              onPress={() => showMode("date", date, onChangeDate)}
+              text={date.toLocaleDateString()}
+            />
+            <ThemedText>Time: </ThemedText>
+            <ThemedButton
+              onPress={() => showMode("time", date, onChangeDate)}
+              text={date.toLocaleTimeString()}
+            />
+          </ThemedView>
+          {/* set recurrence */}
+          <Collapsible
+            title={recurrence ? "Repetition Settings" : "Repetition: Off"}
+            isOpen={recurrence}
+            setIsOpen={setRecurrence}
+          >
+            <RecurrenceBlock rInfo={task?.recurrenceInfo} ref={recRef} />
+          </Collapsible>
+          {/* duration input */}
+          <ThemedView style={styles.stepContainer}>
+            <ThemedTextInput
+              placeholder="Minutes to complete task"
+              value={duration}
+              onChangeText={(text) => {
+                const numeric = text.replace(/[^0-9]/g, ""); // removes anything not 0–9
+                setDuration(numeric);
+              }}
+            />
+            {!duration && (
+              <InfoBox text="Leave this blank for an AI recommendation!" />
+            )}
+          </ThemedView>
+          <SortingBlock sorting={task?.sortingInfo} ref={sortRef} />
+          {/* save button */}
+          <ThemedButton text="Save!" onPress={handleSubmit} type="subtitle" />
         </ThemedView>
-        {/* description input */}
-        <ThemedView style={styles.stepContainer}>
-          <ThemedTextInput
-            placeholder="Description"
-            value={description}
-            onChangeText={setDescription}
-          />
-        </ThemedView>
-        {/* set date of first*/}
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText>Date: </ThemedText>
-          <ThemedButton
-            onPress={() => showMode("date", date, onChangeDate)}
-            text={date.toLocaleDateString()}
-          />
-          <ThemedText>Time: </ThemedText>
-          <ThemedButton
-            onPress={() => showMode("time", date, onChangeDate)}
-            text={date.toLocaleTimeString()}
-          />
-        </ThemedView>
-        {/* set recurrence */}
-        <Collapsible
-          title={recurrence ? "Repetition Settings" : "Repetition: Off"}
-          isOpen={recurrence}
-          setIsOpen={setRecurrence}
-        >
-          <RecurrenceBlock rInfo={task?.recurrenceInfo} ref={recRef} />
-        </Collapsible>
-        {/* duration input */}
-        <ThemedView style={styles.stepContainer}>
-          <ThemedTextInput
-            placeholder="Minutes to complete task"
-            value={duration}
-            onChangeText={(text) => {
-              const numeric = text.replace(/[^0-9]/g, ""); // removes anything not 0–9
-              setDuration(numeric);
-            }}
-          />
-          {!duration && (
-            <InfoBox text="Leave this blank for an AI recommendation!" />
-          )}
-        </ThemedView>
-        <SortingBlock sorting={task?.sortingInfo} ref={sortRef} />
-        {/* save button */}
-        <ThemedButton text="Save!" onPress={handleSubmit} type="subtitle" />
-      </ThemedView>
-    </ScrollView>
+      </ScrollView>
     </>
   );
 };

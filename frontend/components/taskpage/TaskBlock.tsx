@@ -16,7 +16,6 @@ export default function TaskBlock({
   onCheck: () => void;
   startState?: boolean;
 }) {
-  const [checked, setChecked] = useState(task.completed);
   const styles = getStyles(task.duration || 300);
   return (
     <ThemedView style={styles.item}>
@@ -26,7 +25,7 @@ export default function TaskBlock({
           onCheck();
         }}
       >
-        <TouchableOpacity onPress={()=>{router.push(ROUTES.TASK)}}>
+        <TouchableOpacity onPress={()=>{router.push({pathname:ROUTES.TASK,params:{taskId:task.id}})}}>
           <ThemedText type="subtitle">{task.title}</ThemedText>
         </TouchableOpacity>
       </Checkbox>
