@@ -9,6 +9,7 @@ type Props = {
   selected: number;
   setSelected: () => void;
   children: ReactNode;
+  style?:any
 };
 
 export default function RadioButton({
@@ -16,10 +17,10 @@ export default function RadioButton({
   selected,
   setSelected,
   children,
+  style
 }: Props) {
-    const styles = createStyles(index)
   return (
-    <ThemedView style={styles.titleContainer}>
+    <ThemedView style={[styles.titleContainer,style]}>
       <TouchableOpacity onPress={setSelected} style={{justifyContent:'center'}}>
         <Ionicons
           name={
@@ -41,7 +42,7 @@ export default function RadioButton({
   );
 }
 
-const createStyles = (index:number)=>StyleSheet.create({
+const styles=StyleSheet.create({
   container: {
     width: "100%",
   },
@@ -51,6 +52,5 @@ const createStyles = (index:number)=>StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
-    zIndex: 4-index,
   },
 });

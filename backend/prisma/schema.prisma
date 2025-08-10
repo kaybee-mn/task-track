@@ -45,7 +45,7 @@ model RecurrenceInfo {
   bySetPos           Int?
   endDate            DateTime?
   endType            Int
-  lastCompletionDate DateTime?
+  lastCompletionDate DateTime
   task               Task           @relation(fields: [taskId], references: [id])
 }
 

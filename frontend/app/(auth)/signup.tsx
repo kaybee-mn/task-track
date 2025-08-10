@@ -38,7 +38,6 @@ const Login = () => {
         email,
         password,
         timezone,
-       
       }),
       headers: { "Content-Type": "application/json" },
     }).catch((err) => console.error("Signup Error:", err));
@@ -76,6 +75,8 @@ const Login = () => {
           onBlur={checkPasswordValidity}
           onChangeText={setPassword}
           value={password}
+          textContentType="newPassword"
+          autoComplete="new-password"
         />
         {!isValidPassword && (
           <ThemedText type="error">

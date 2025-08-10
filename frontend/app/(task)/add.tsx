@@ -74,7 +74,7 @@ const Add = () => {
       if (rInfo)
         data = {
           ...data,
-          recurrenceInfo: { create: rInfo },
+          recurrenceInfo: { create: {...rInfo,lastCompletionDate:date} },
         };
       else data = { ...data, recurrence: false };
     }

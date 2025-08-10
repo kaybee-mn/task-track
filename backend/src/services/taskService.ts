@@ -2,6 +2,7 @@ import fastify from "fastify";
 import { prisma } from "../lib/prisma";
 import type { CreateTaskBody, RecurrenceInfo, Task } from "../types/taskTypes";
 import {
+  getNextDate,
   recurrenceInfoToRRule,
   stripTime,
   stripTimePlusOne,
@@ -19,6 +20,7 @@ export async function createTask(userId: string, reqBody: any) {
     recurrenceInfo,
     sortingInfo,
   } = body;
+  const firstDueDate = await getNextDate(recurrenceInfo,startDate);
 
   const d = {
     data: {
@@ -43,6 +45,7 @@ export async function createTask(userId: string, reqBody: any) {
     },
   };
   const task = await prisma.task.create(d);
+
   await prisma.log.create({
     data: {
       type: "task",

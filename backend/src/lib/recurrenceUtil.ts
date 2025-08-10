@@ -58,5 +58,21 @@ export function stripTime(date: Date) {
 }
 
 export function stripTimePlusOne(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+  const newdate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  newdate.setHours(23, 59, 59, 999);
+  return newdate;
+}
+
+export async function getNextDate(info: RecurrenceInfo) {
+  //if fromLastCompletion, next date will be calculated from today's date, else, it will be calculated from last due date(stored in last complete date)
+  const taskRule = recurrenceInfoToRRule(
+    info,
+    info.fromLastCompletion
+      ? new Date().getTime()
+      : info.lastCompletionDate.getTime()
+  );
+  if (info.fromLastCompletion) {
+    return taskRule.after(new Date());
+  }
+  if (info.lastCompletionDate) return taskRule.after(info.lastCompletionDate);
 }

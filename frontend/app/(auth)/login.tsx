@@ -12,6 +12,7 @@ import { useState } from "react";
 import { router, usePathname } from "expo-router";
 import { ROUTES } from "@/constants/routes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Keychain from 'react-native-keychain';
 import { supabase } from "@/api/supabaseClient";
 
 const Login = () => {
@@ -33,17 +34,19 @@ const Login = () => {
     return isValid;
   };
   const handleReconfirm = async () => {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/confirmation`, {
-      method: "POST",
-      body: JSON.stringify({ email }),
-      headers: { "Content-Type": "application/json" },
-    });
-    if(!response.ok){
-      setMessage("Resend failed")
-    }else{
-      setMessage("Confirmation email sent!")
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_API_URL}/confirmation`,
+      {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    if (!response.ok) {
+      setMessage("Resend failed");
+    } else {
+      setMessage("Confirmation email sent!");
     }
-
   };
 
   const handleLogin = async () => {
@@ -61,14 +64,12 @@ const Login = () => {
       if (!response.ok) {
         throw new Error(data.error.code);
       }
-      console.log(data)
       await AsyncStorage.setItem("session", JSON.stringify(data));
+      console.log(await AsyncStorage.getItem("session"));
+      // await Keychain.setGenericPassword(email, password);
       router.push(ROUTES.HOME);
     } catch (err) {
-      console.error(
-        "Login Error:",
-        String(err)
-      );
+      console.error("Login Error:", String(err));
       if (String(err).includes("email_not_confirmed")) {
         setMessage("Please check your email to confirm your account!");
       } else {
@@ -96,6 +97,8 @@ const Login = () => {
           value={email}
           onChangeText={setEmail}
           onBlur={checkEmailValidity}
+          textContentType="username"
+          autoComplete="username"
         />
         {!isValidEmail && (
           <ThemedText type="error">Please enter a valid email</ThemedText>
@@ -109,17 +112,20 @@ const Login = () => {
           onChangeText={setPassword}
           value={password}
           onSubmitEditing={handleLogin}
+          textContentType="password"
+          autoComplete="current-password"
         />
         {message && (
           <ThemedText type="error" style={{ textAlign: "center" }}>
             {message}
           </ThemedText>
         )}
-        {message.includes("confirm ")||message.includes("failed") && (
-          <ThemedText type="link" onPress={handleReconfirm}>
-            Resend Confirmation Email
-          </ThemedText>
-        )}
+        {message.includes("confirm ") ||
+          (message.includes("failed") && (
+            <ThemedText type="link" onPress={handleReconfirm}>
+              Resend Confirmation Email
+            </ThemedText>
+          ))}
       </ThemedView>
       <ThemedButton text="Login" onPress={handleLogin} type="subtitle" />
       <ThemedView style={{ marginTop: 24 }}>

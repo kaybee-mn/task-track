@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { createTask, getDailyTasks } from "../services/taskService";
 import type { FastifyPluginAsync } from "fastify";
+import { getNextDate } from "../lib/recurrenceUtil";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -22,7 +23,7 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/tasks/:date", async (request, reply) => {
     const userId = request.user.id;
     const tasks = await fastify.prisma.task.findMany({
-      where: { userId },
+      where: { userId, completed: false },
       include: { recurrenceInfo: true, sortingInfo: true },
     });
     const params = request.params as { date: string };
@@ -42,6 +43,9 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
     const body = request.body as { completed: boolean };
     const task = await fastify.prisma.task.findUnique({
       where: { id: request.id },
+      include: {
+        recurrenceInfo: true,
+      },
     });
 
     if (!task || task.userId !== userId) {
@@ -49,6 +53,38 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
         .status(403)
         .send({ error: "Not authorized to update this task" });
     }
+    // if no recurrence setting, mark task as complete
+
+    if (!task.recurrence || !task.recurrenceInfo) {
+      await fastify.prisma.task.update({
+        where: {
+          id: request.id,
+        },
+        data: {
+          completed: body.completed,
+        },
+      });
+      return;
+    }
+
+    // get next date
+
+    const nextDate = getNextDate(task.recurrenceInfo);
+    //if there is no next date, mark as complete (all completions have been finished)
+    if (!nextDate) {
+      await fastify.prisma.task.update({
+        where: {
+          id: request.id,
+        },
+        data: {
+          completed: body.completed,
+        },
+      });
+      return;
+    }
+    //last possible case - there are completions remaining
+    // if fromLastCompletion, update lastCompletionDate to current date
+    // if !fromLastCompletion, update lastCompletionDate to 
     await fastify.prisma.task.update({
       where: {
         id: request.id,
@@ -65,7 +101,7 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
         task: {
           connect: { id: request.id },
         },
-        note:"Completed Task: "+ task.title
+        note: "Completed Task: " + task.title,
       },
     });
   });

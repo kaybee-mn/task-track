@@ -14,7 +14,7 @@ export type RecurrenceInfo = {
   type: RecurrenceInfoType;
   freq: number; //example: how many days
   fromLastCompletion: boolean; //if true, next date is calculated from last day of completion. otherwise, from last due day
-  lastCompletionDate?: Date|null;
+  lastCompletionDate: Date;//if fromLastCompletion is true, holds date of last completion, if false, hold last due date
   byDay?: string[]|null; //if weekly, string of weekdays: mo,tu,we,th,fr,sa,su. if monthly, days of month, if yearly, months
   endType: number; //if 1 or 2, end on end. if 0, never end
   end?: number|null; //if endType= 2, it is the amount of repeats remaining before end

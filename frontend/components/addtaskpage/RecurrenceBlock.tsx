@@ -12,7 +12,6 @@ import {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import Checkbox from "./Checkbox";
-import { endAsyncEvent } from "react-native/Libraries/Performance/Systrace";
 
 type Props = {
   rInfo?: RecurrenceInfo;
@@ -27,10 +26,10 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
     returnRecInfo,
   }));
   const recTypeOptions = [
-    "Days",
+    "Days  ",
     "Months",
-    "Weeks",
-    "Hours",
+    "Weeks ",
+    "Hours ",
     "Minutes",
     "Years",
   ];
@@ -56,7 +55,13 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
   const [recFreq, setRecFreq] = useState<string | undefined>(
     rInfo?.freq ? String(rInfo?.freq) : undefined
   );
-  const [recType, setRecType] = useState<string>(rInfo?.type || "Days");
+  const [recType, setRecType] = useState<string>(
+    rInfo?.type && rInfo.type !== "DAILY"
+      ? rInfo.type.charAt(0) +
+          rInfo.type.toLowerCase().slice(1, rInfo.type.length - 2) +
+          "s"
+      : "Days"
+  );
   const [monthDays, setMonthDays] = useState<string>();
   const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>(
     rInfo?.byDay && (rInfo?.type === "BYMONTHDAY" || rInfo.type === "WEEKLY")
@@ -72,7 +77,7 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
       : "1st"
   );
   const [end, setEnd] = useState<string>(new Date().toISOString());
-  const [endCount, setEndCount] = useState<string>();
+  const [endCount, setEndCount] = useState<string>(String(rInfo?.end) || "");
   const [endSetting, setendSetting] = useState<number>(rInfo?.endType || 0);
   const [repeat, setRepeat] = useState<number>(
     rInfo?.fromLastCompletion && rInfo?.fromLastCompletion === true ? 1 : 0
@@ -118,7 +123,7 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
       updateData("byDay", selectedWeekdays);
     } else {
       let type = recType;
-      if (recType === "Days") {
+      if (recType.trim() === "Days") {
         type = "DAILY";
       } else {
         type = recType.split("s")[0];
@@ -151,7 +156,7 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
   };
 
   return (
-    <ThemedView style={styles.colContainer}>
+    <ThemedView style={[styles.colContainer,{zIndex:10}]}>
       <RadioButton
         selected={selectedRecurrence}
         setSelected={() => setSelectedRecurrence(0)}
@@ -163,6 +168,7 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
         selected={selectedRecurrence}
         setSelected={() => setSelectedRecurrence(1)}
         index={1}
+        style={{zIndex:5}}
       >
         <ThemedView style={styles.titleContainer}>
           <ThemedText>Every </ThemedText>
@@ -239,6 +245,7 @@ const RecurrenceBlock = forwardRef<RecRef, Props>(({ rInfo }, ref) => {
         selected={selectedRecurrence}
         setSelected={() => setSelectedRecurrence(2)}
         index={2}
+        style={{zIndex:3}}
       >
         <ThemedView style={styles.titleContainer}>
           <ThemedText>On the</ThemedText>

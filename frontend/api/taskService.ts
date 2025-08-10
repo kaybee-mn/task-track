@@ -60,6 +60,7 @@ const createTask = async ({
     console.warn("No token found.");
     return;
   }
+  console.log(token)
   const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/tasks`, {
     method: "POST",
     headers: {

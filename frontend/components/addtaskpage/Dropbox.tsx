@@ -6,7 +6,7 @@ import { ThemedText } from "../ThemedText";
 type Props = {
   options: any[];
   selected: any;
-  setSelected: (newR:number)=>void;
+  setSelected: (newR: number) => void;
 };
 
 function DropdownMenu({ options, selected, setSelected }: Props) {
@@ -27,12 +27,19 @@ function DropdownMenu({ options, selected, setSelected }: Props) {
       </TouchableOpacity>
       {open && (
         <View style={styles.dropdown}>
-          {options.map((option, index) => (
-            option===selected?undefined:
-            <TouchableOpacity key={index} onPress={() => handleSelect(index)} activeOpacity={1}>
-              <ThemedText>{option}</ThemedText>
-            </TouchableOpacity>
-          ))}
+          {options.map((option, index) =>
+            option === selected ? undefined : (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleSelect(index)}
+                activeOpacity={1}
+              >
+                <ThemedText style={{ wordWrap: "none", flexWrap: "nowrap" }}>
+                  {option}
+                </ThemedText>
+              </TouchableOpacity>
+            )
+          )}
         </View>
       )}
     </View>
@@ -54,7 +61,9 @@ const styles = StyleSheet.create({
     padding: 8,
     zIndex: 10090,
     borderTopWidth: 0,
-    backgroundColor:'#1f1e1eff'
+    backgroundColor: "#1f1e1eff",
+    wordWrap: "none",
+    flexWrap: "nowrap",
   },
 });
 
