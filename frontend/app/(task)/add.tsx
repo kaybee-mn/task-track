@@ -24,6 +24,7 @@ import BackButton from "@/components/BackButton";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { TaskContext } from "@/contexts/TaskContext";
 import Loading from "@/components/Loading";
+import AudioInput from "@/components/addtaskpage/AudioInput";
 
 const Add = () => {
   const { taskId } = useLocalSearchParams();
@@ -110,6 +111,7 @@ const Add = () => {
     <>
       <Stack.Screen options={{ title: (task ? "Edit" : "Add") + " Task" }} />
       <ScrollView style={{}}>
+        <AudioInput/>
         <ThemedView style={[styles.mainContainer, { paddingBottom: 180 }]}>
           {/* <ThemedView style={styles.titleContainer}>
           <BackButton/>

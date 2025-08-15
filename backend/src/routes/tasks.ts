@@ -61,7 +61,7 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
           id: request.id,
         },
         data: {
-          completed: body.completed,
+          completed: true
         },
       });
       return;
@@ -77,22 +77,33 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
           id: request.id,
         },
         data: {
-          completed: body.completed,
+          completed: true,
         },
       });
       return;
     }
+
+    if (!task.recurrenceInfo.fromLastCompletion) {
+    }
+
     //last possible case - there are completions remaining
     // if fromLastCompletion, update lastCompletionDate to current date
-    // if !fromLastCompletion, update lastCompletionDate to 
-    await fastify.prisma.task.update({
-      where: {
-        id: request.id,
+    // if !fromLastCompletion, update lastCompletionDate to nextDate
+    //if endType === 2, count = count-1
+    const newData = {
+      ...{
+        lastCompletionDate: task.recurrenceInfo.fromLastCompletion
+          ? new Date()
+          : nextDate,
       },
-      data: {
-        completed: body.completed,
+      ...{
+        end:
+          task.recurrenceInfo.endType === 2 && task.recurrenceInfo.end
+            ? task.recurrenceInfo.end - 1
+            : null,
       },
-    });
+    };
+    fastify.prisma.recurrenceInfo.update({ where: { id: task.recurrenceInfo.id }, data:{...newData}});
     fastify.prisma.log.create({
       data: {
         type: "task",

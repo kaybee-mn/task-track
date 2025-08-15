@@ -63,7 +63,7 @@ export function stripTimePlusOne(date: Date) {
   return newdate;
 }
 
-export async function getNextDate(info: RecurrenceInfo) {
+export function getNextDate(info: RecurrenceInfo) {
   //if fromLastCompletion, next date will be calculated from today's date, else, it will be calculated from last due date(stored in last complete date)
   const taskRule = recurrenceInfoToRRule(
     info,
@@ -72,7 +72,11 @@ export async function getNextDate(info: RecurrenceInfo) {
       : info.lastCompletionDate.getTime()
   );
   if (info.fromLastCompletion) {
-    return taskRule.after(new Date());
+    const found = taskRule.after(new Date());
+    return found;
   }
-  if (info.lastCompletionDate) return taskRule.after(info.lastCompletionDate);
+  if (info.lastCompletionDate) {
+    const found = taskRule.after(info.lastCompletionDate);
+    return found;
+  }
 }

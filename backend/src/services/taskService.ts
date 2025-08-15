@@ -20,7 +20,7 @@ export async function createTask(userId: string, reqBody: any) {
     recurrenceInfo,
     sortingInfo,
   } = body;
-  const firstDueDate = await getNextDate(recurrenceInfo,startDate);
+  const firstDueDate = await getNextDate(recurrenceInfo);
 
   const d = {
     data: {

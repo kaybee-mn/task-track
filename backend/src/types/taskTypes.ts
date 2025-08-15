@@ -18,7 +18,7 @@ export type RecurrenceInfo = {
   byDay?: string[]|null; //if weekly, string of weekdays: mo,tu,we,th,fr,sa,su. if monthly, days of month, if yearly, months
   endType: number; //if 1 or 2, end on end. if 0, never end
   end?: number|null; //if endType= 2, it is the amount of repeats remaining before end
-  endDate?:Date|null;//endDate, if endType = 2
+  endDate?:Date|null;//endDate, if endType = 1
   bySetPos?: number|null; // e.g., 1 = first, 3 = third, -1 = last
 };
 export type RecurrenceInfoType =
