@@ -12,7 +12,6 @@ import { useState } from "react";
 import { router, usePathname } from "expo-router";
 import { ROUTES } from "@/constants/routes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Keychain from 'react-native-keychain';
 import { supabase } from "@/api/supabaseClient";
 
 const Login = () => {
