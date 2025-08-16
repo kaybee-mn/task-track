@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
- <style name="Theme.EdgeToEdge" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-    </style>
+  <style name="Theme.EdgeToEdge" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <item name="android:windowTranslucentStatus">true</item>
+    <item name="android:windowTranslucentNavigation">true</item>
+  </style>
   <style name="AppTheme" parent="Theme.EdgeToEdge">
     <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     <item name="colorPrimary">@color/colorPrimary</item>

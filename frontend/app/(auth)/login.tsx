@@ -96,6 +96,7 @@ const Login = () => {
           value={email}
           onChangeText={setEmail}
           onBlur={checkEmailValidity}
+          onSubmitEditing={handleLogin}
           textContentType="username"
           autoComplete="username"
         />

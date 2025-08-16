@@ -52,8 +52,8 @@ const AudioInput = () => {
 
       // Optional: Handle audio analysis data
       onAudioAnalysis: async (e: AudioAnalysisEvent) => {
-        console.log(`onAudioAnalysis`, e);
-        if (e.speechAnalysis && e.amplitudeRange.max > 0.4) {
+        console.log(`onAudioAnalysis`, e.amplitudeRange.max);
+        if (e.amplitudeRange.max > 0.1) {
           resetSilenceTimer();
         }
       },
@@ -77,8 +77,12 @@ const AudioInput = () => {
   };
 
   const stopListening = async () => {
-    const result = await stopRecording();
-    setAudioResult(result);
+    try {
+      const result = await stopRecording();
+      setAudioResult(result);
+    } catch (e) {
+      console.error("Error stopping recording", e);
+    }
   };
 
   return (
