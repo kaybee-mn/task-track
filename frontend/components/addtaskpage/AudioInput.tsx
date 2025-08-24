@@ -12,6 +12,22 @@ import { AudioAnalysisEvent } from "@siteed/expo-audio-studio/build/types/events
 const AudioInput = () => {
   const [text, setText] = useState("");
   const silenceTimer = useRef<number | null>(null);
+
+  const socket = new WebSocket("ws://127.0.0.1:8080");
+
+  socket.onopen = () => {
+    console.log("Connected to backend");
+  };
+
+  // Suppose you have a Float32Array chunk from mic
+  const sendChunk = (float32Array: Float32Array) => {
+    socket.send(float32Array); // let backend handle conversion
+  };
+
+  socket.onmessage = (event) => {
+    console.log("Transcript from backend:", event.data);
+  };
+
   const { startRecording, stopRecording, isRecording, analysisData } =
     useAudioRecorder();
 
@@ -28,7 +44,7 @@ const AudioInput = () => {
     const config: RecordingConfig = {
       interval: 500, // Emit recording data every 500ms
       enableProcessing: true, // Enable audio analysis
-      sampleRate: 44100, // Sample rate in Hz (16000, 44100, or 48000)
+      sampleRate: 16000, // Sample rate in Hz (16000, 44100, or 48000)
       channels: 1, // Mono recording
       encoding: "pcm_16bit", // PCM encoding (pcm_8bit, pcm_16bit, pcm_32bit)
 
@@ -48,6 +64,7 @@ const AudioInput = () => {
       // Optional: Handle audio stream data
       onAudioStream: async (audioData) => {
         // call assemblyai
+        sendChunk(audioData.data as Float32Array);
       },
 
       // Optional: Handle audio analysis data
@@ -65,8 +82,12 @@ const AudioInput = () => {
       bufferDurationSeconds: 0.1, // Buffer size in seconds
       // Default: undefined (uses 1024 frames, but iOS enforces minimum 0.1s)
     };
-    const startResult = await startRecording(config);
-    return startResult;
+    try {
+      const startResult = await startRecording(config);
+      return startResult;
+    } catch (e) {
+      console.warn("Recording service failed:", e);
+    }
   };
 
   const resetSilenceTimer = () => {
