@@ -1,6 +1,7 @@
 import { AssemblyAI } from "assemblyai";
 import { Readable } from "stream";
 import WebSocket, { WebSocketServer, type RawData } from "ws";
+import { float32ToInt16 } from "../lib/transcriptionUtil";
 // import recorder from "node-record-lpcm16";
 
 // helper functions
@@ -72,7 +73,7 @@ async function run() {
   setupTerminationHandlers();
 }
 
-//when post recieved
+//handles incoming connections from frontend
 try {
   const wss = new WebSocketServer({ port: 8080 });
 
@@ -80,37 +81,19 @@ try {
     console.log("Client connected");
 
     socket.on("message", (data) => {
-      let chunk: ArrayBuffer;
+      if (ws && ws.readyState === WebSocket.OPEN && !stopRequested) {
+        if (data instanceof Float32Array) {
+          // convert Float32Array to Int16Array and then to base64, ready for AssemblyAI
 
-      if (typeof data === "string") {
-        // Convert base64 string to ArrayBuffer
-        const binary = Buffer.from(data, "base64");
-        chunk = binary.buffer.slice(
-          binary.byteOffset,
-          binary.byteOffset + binary.byteLength
-        );
-      } else if (data instanceof Float32Array) {
-        chunk = data.buffer.slice(
-          data.byteOffset,
-          data.byteOffset + data.byteLength
-        ) as ArrayBuffer;
-      } else if (Buffer.isBuffer(data)) {
-        chunk = data.buffer.slice(
-          data.byteOffset,
-          data.byteOffset + data.byteLength
-        ) as ArrayBuffer;
+          const pcm16 = float32ToInt16(data);
+          const base64 = Buffer.from(pcm16.buffer).toString("base64");
+          // send to AssemblyAI via WebSocket
+          ws.send(JSON.stringify({ audio_data: base64 }));
+        }
       } else {
         console.warn("Unsupported data type", data);
         return;
       }
-
-      console.log("Chunk length (bytes):", chunk.byteLength);
-
-      if (ws && ws.readyState === WebSocket.OPEN && !stopRequested) {
-        const int16Chunk = data;
-        ws.send(int16Chunk);
-      }
-      // forward to AssemblyAI, save to file, etc.
     });
 
     socket.on("close", () => {
