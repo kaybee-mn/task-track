@@ -22,11 +22,14 @@
   "dependencies": {
     "@prisma/client": "^6.13.0",
     "@supabase/supabase-js": "^2.53.0",
+    "assemblyai": "^4.15.0",
+    "base64-js": "^1.5.1",
     "fastify": "^5.4.0",
     "fastify-plugin": "^5.0.1",
     "jose": "^6.0.12",
     "jsonwebtoken": "^9.0.2",
     "prisma": "^6.13.0",
-    "rrule": "^2.8.1"
+    "rrule": "^2.8.1",
+    "ws": "^8.18.3"
   }
 }
