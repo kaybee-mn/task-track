@@ -20,8 +20,10 @@ export async function createTask(userId: string, reqBody: any) {
     recurrenceInfo,
     sortingInfo,
   } = body;
-  const firstDueDate = await getNextDate(recurrenceInfo);
-
+  const firstDueDate = recurrenceInfo.lastCompletionDate
+    ? recurrenceInfo.lastCompletionDate
+    : await getNextDate(recurrenceInfo, startDate);
+  console.log("INFO", firstDueDate);
   const d = {
     data: {
       title,
@@ -31,11 +33,11 @@ export async function createTask(userId: string, reqBody: any) {
       startDate: startDate,
       ...(recurrence && {
         recurrenceInfo: {
-          ...recurrenceInfo,
+          create: { ...recurrenceInfo, lastCompletionDate: firstDueDate },
         },
       }),
       sortingInfo: {
-        ...sortingInfo,
+        create: { ...sortingInfo },
       },
       user: {
         connect: {
@@ -63,7 +65,7 @@ export async function createTask(userId: string, reqBody: any) {
 export async function getDailyTasks(date: Date, tasks: Task[]) {
   const matchingTasks = tasks.filter((task) => {
     //if the task does not repeat
-    if (!task.recurrence||!task.recurrenceInfo)
+    if (!task.recurrence || !task.recurrenceInfo)
       return (
         stripTime(date).getTime() ===
         stripTime(new Date(task.startDate)).getTime()

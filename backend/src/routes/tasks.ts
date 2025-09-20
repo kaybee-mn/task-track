@@ -32,6 +32,7 @@ const taskRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   fastify.post("/tasks", async (request, reply) => {
+    console.log("TASKS POST")
     const userId = request.user.id;
 
     const task = await createTask(userId, request.body);

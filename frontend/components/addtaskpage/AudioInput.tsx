@@ -13,7 +13,7 @@ const AudioInput = () => {
   const [text, setText] = useState("");
   const silenceTimer = useRef<number | null>(null);
 
-  const socket = new WebSocket("ws://127.0.0.1:8080");
+  const socket = new WebSocket("ws://192.168.4.126:8080");
 
   socket.onopen = () => {
     console.log("Connected to backend");

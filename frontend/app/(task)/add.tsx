@@ -75,14 +75,14 @@ const Add = () => {
       if (rInfo)
         data = {
           ...data,
-          recurrenceInfo: { create: {...rInfo,lastCompletionDate:date} },
+          recurrenceInfo: { ...rInfo,lastCompletionDate:date },
         };
       else data = { ...data, recurrence: false };
     }
     // get sorting info from sortblock
     data = {
       ...data,
-      sortingInfo: { create: sortRef.current?.returnSortInfo() },
+      sortingInfo: sortRef.current?.returnSortInfo() ,
     };
     createTask({ data: data as Task, setRefreshing: setLoading });
   };
