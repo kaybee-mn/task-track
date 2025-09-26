@@ -58,7 +58,7 @@ const Add = () => {
     setLoading(true);
     let data = {};
     if (!duration) {
-      // api call to suggest duration based on title, desc
+      // replace with api call to suggest duration based on title, desc
       setDuration("1");
     }
     data = {

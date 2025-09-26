@@ -20,9 +20,12 @@ export async function createTask(userId: string, reqBody: any) {
     recurrenceInfo,
     sortingInfo,
   } = body;
-  const firstDueDate = recurrenceInfo.lastCompletionDate
-    ? recurrenceInfo.lastCompletionDate
-    : await getNextDate(recurrenceInfo, startDate);
+  let firstDueDate: Date | null=new Date(startDate);
+  if (recurrence && recurrenceInfo) {
+    firstDueDate = recurrenceInfo.lastCompletionDate
+      ? recurrenceInfo.lastCompletionDate
+      : await getNextDate(recurrenceInfo, startDate);
+  }
   console.log("INFO", firstDueDate);
   const d = {
     data: {
