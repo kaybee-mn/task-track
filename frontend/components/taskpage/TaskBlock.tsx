@@ -33,7 +33,7 @@ export default function TaskBlock({
         >
           <ThemedText
             type="subtitle"
-            style={{flex: 1, flexWrap: 'wrap',maxWidth: '90%' }}
+            style={{flex: 1, flexWrap: 'wrap' }}
           >
             {task.title}
           </ThemedText>
@@ -50,5 +50,6 @@ const getStyles = (height: number) =>
       marginVertical: 8,
       flexDirection: "row",
       flexWrap:'wrap',
+      width:'100%'
     },
   });
